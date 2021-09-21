@@ -1,4 +1,4 @@
-package com.example.snash;
+package com.snash;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

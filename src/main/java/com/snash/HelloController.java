@@ -1,4 +1,4 @@
-package com.example.snash;
+package com.snash;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
