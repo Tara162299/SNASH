@@ -1,4 +1,4 @@
-module com.example.snash {
+module com.snash {
     requires javafx.controls;
     requires javafx.fxml;
     //requires javafx.web;
