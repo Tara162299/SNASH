@@ -11,23 +11,23 @@ import java.util.ArrayList;
 public class TablePage {
 
     // How many "generic fields" should be on the page- i.e. not hardcoded by the devs.
-    private static final int numFields = 9;
+    public static final int numFields = 9;
     // How many hardcoded lines come before the field grid, i.e. buttons or filepath field.
-    private static final int fieldGridOffset = 1;
+    public static final int fieldGridOffset = 1;
 
     private GridPane grid;
-    ArrayList<TextField> fieldNames = new ArrayList<>();
-    ArrayList<TextField> fieldValues = new ArrayList<>();
+    private ArrayList<TextField> fieldNames = new ArrayList<>();
+    private ArrayList<TextField> fieldValues = new ArrayList<>();
+    private TextField pathField = new TextField();
 
     // Buttons are passed as parameters, as they interact with MTableUI code and can't be initialized here.
-    public TablePage(Button previousButton, Button nextButton, Button doneButton){
+    public TablePage(){
         grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
 
         Text pathText = new Text("Save Location");
-        TextField pathField = new TextField();
         grid.add(pathText, 0, 0);
         grid.add(pathField, 1, 0);
 
@@ -37,11 +37,30 @@ public class TablePage {
             grid.add(fieldNames.get(i), 0, i + fieldGridOffset);
             grid.add(fieldValues.get(i), 1, i + fieldGridOffset);
         }
-
-        grid.add(previousButton, 0, numFields + fieldGridOffset);
-        grid.add(nextButton, 1, numFields + fieldGridOffset);
-        grid.add(doneButton, 0, numFields + fieldGridOffset + 1);
     }
 
     public GridPane getGrid() { return grid; }
+
+    public String getPathFieldText(){
+        return pathField.getText();
+    }
+    public void setPathFieldText(String pathFieldText){
+        pathField.setText(pathFieldText);
+    }
+
+
+    public void setPreviousButton(Button previousButton){
+        grid.add(previousButton, 0, numFields + fieldGridOffset);
+    }
+    public void setNextButton(Button nextButton){
+        grid.add(nextButton, 1, numFields + fieldGridOffset);
+    }
+    public void setDoneButton(Button doneButton){
+        grid.add(doneButton, 0, numFields + fieldGridOffset + 1);
+    }
+    public void setPageNumber(int pageNumber){
+        grid.add(new Text("Page " + (pageNumber + 1)), 1, numFields + fieldGridOffset + 1);
+    }
+
+
 }
