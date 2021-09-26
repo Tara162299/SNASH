@@ -32,11 +32,11 @@ public class MTableUI extends Application {
         showPage(0);
     }
 
-    public void close(){
+    private void close(){
         stage.close();
     }
 
-    void showPage(int pageNumber){
+    private void showPage(int pageNumber){
         StackPane root = new StackPane();
         root.getChildren().add(pages.get(pageNumber).getGrid());
         stage.setScene(new Scene(root));
@@ -45,7 +45,7 @@ public class MTableUI extends Application {
 
     // This is a replacement for "nextPage" and "previousPage" to reduce duplicate code.
     // Safeguards are in place for bad page numbers, but for now, stick to one more or less than the current page.
-    void moveToPage(int pageNumber){
+    private void moveToPage(int pageNumber){
         if (pageNumber < 0){
             return;
         }
@@ -62,8 +62,9 @@ public class MTableUI extends Application {
         currentPageNumber = pageNumber;
     }
 
-    void submit() {
+    private void submit() {
         finalPathFieldText = pathFieldText(currentPageNumber);
+        System.out.println("finalPathFieldText = " + finalPathFieldText);
         stage.close();
     }
 
