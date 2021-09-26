@@ -26,21 +26,31 @@ public class RecordingUI extends Application {
       stage.show();
     }
 
-    private void addRecordButton(Grid grid) {
-      Button btn = new Button("Record");
-      HBox hbBtn = new HBox(10);
+    private void addRecordButton(Hbox hbBtn, GridPane grid) {
+      // Media media = new Media(new File("/com/example/snash/test.mp4").toURI().toString());
+      // MediaPlayer mediaPlayer = new MediaPlayer(media);
+      // mediaPlayer.setAutoPlay(true);
+      Image image = new Image(new File("/com/example/snash/test.png").toURI().toString());
+      Button btn = new Button("Record", new ImageView(mediaPlayer));
+      btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                label.setText("Accepted");
+            }
+        });
       hbBtn.setAlignment(Pos.BOTTOM_MIDDLE);
       hbBtn.getChildren().add(btn);
       grid.add(hbBtn, 1, 4);
     }
 
-    private void addStopButton(Grid grid) {
+    private void addStopButton(GridPane grid) {
       Button btn = new Button("Stop");
       HBox hbBtn = new HBox(10);
       hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
       hbBtn.getChildren().add(btn);
       grid.add(hbBtn, 1, 4);
     }
+
+
 
     // private ArrayList<TablePage> pages = new ArrayList<>();
     // private int currentPageNumber = 0;
