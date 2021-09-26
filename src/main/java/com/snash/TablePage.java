@@ -1,6 +1,7 @@
 package com.snash;
 
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -8,7 +9,7 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 
-public class TablePage {
+public class TablePage extends Group {
 
     // How many "generic fields" should be on the page- i.e. not hardcoded by the devs.
     public static final int numFields = 9;
@@ -21,7 +22,9 @@ public class TablePage {
     private TextField pathField = new TextField();
 
     // Buttons are passed as parameters, as they interact with MTableUI code and can't be initialized here.
-    public TablePage(){
+    public TablePage(int pageNumber){
+        MTableUI tableUI = (MTableUI) getScene();
+
         grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
@@ -37,29 +40,33 @@ public class TablePage {
             grid.add(fieldNames.get(i), 0, i + fieldGridOffset);
             grid.add(fieldValues.get(i), 1, i + fieldGridOffset);
         }
-    }
 
-    public GridPane getGrid() { return grid; }
+        Button doneButton = new Button("Start Recording");
+        doneButton.setOnAction((event) ->
+                tableUI.submit());
+
+        Button previousButton = new Button("Previous");
+        previousButton.setOnAction((event) ->
+                tableUI.moveToPage(pageNumber - 1));
+
+        Button nextButton = new Button("Next");
+        nextButton.setOnAction((event) ->
+                tableUI.moveToPage(pageNumber + 1));
+
+        grid.add(previousButton, 0, numFields + fieldGridOffset);
+        grid.add(nextButton, 1, numFields + fieldGridOffset);
+        grid.add(doneButton, 0, numFields + fieldGridOffset + 1);
+        grid.add(new Text("Page " + (pageNumber + 1)), 1, numFields + fieldGridOffset + 1);
+
+
+        getChildren().add(grid);
+    }
 
     public String getPathFieldText(){
         return pathField.getText();
     }
     public void setPathFieldText(String pathFieldText){
         pathField.setText(pathFieldText);
-    }
-
-
-    public void setPreviousButton(Button previousButton){
-        grid.add(previousButton, 0, numFields + fieldGridOffset);
-    }
-    public void setNextButton(Button nextButton){
-        grid.add(nextButton, 1, numFields + fieldGridOffset);
-    }
-    public void setDoneButton(Button doneButton){
-        grid.add(doneButton, 0, numFields + fieldGridOffset + 1);
-    }
-    public void setPageNumber(int pageNumber){
-        grid.add(new Text("Page " + (pageNumber + 1)), 1, numFields + fieldGridOffset + 1);
     }
 
 
