@@ -65,7 +65,6 @@ public class MTableUI extends Application {
 
     void submit() {
         finalPathFieldText = pathFieldText(currentPageNumber);
-        System.out.println(finalPathFieldText);
         stage.close();
     }
 
