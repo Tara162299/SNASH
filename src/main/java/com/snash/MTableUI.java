@@ -40,6 +40,7 @@ public class MTableUI extends Application {
         StackPane root = new StackPane();
         root.getChildren().add(pages.get(pageNumber).getGrid());
         stage.setScene(new Scene(root));
+        stage.setMaximized(true);
         stage.show();
     }
 
@@ -64,6 +65,7 @@ public class MTableUI extends Application {
 
     void submit() {
         finalPathFieldText = pathFieldText(currentPageNumber);
+        System.out.println(finalPathFieldText);
         stage.close();
     }
 
