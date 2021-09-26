@@ -40,6 +40,7 @@ public class MTableUI extends Application {
         StackPane root = new StackPane();
         root.getChildren().add(pages.get(pageNumber).getGrid());
         stage.setScene(new Scene(root));
+        stage.setMaximized(true);
         stage.show();
     }
 
@@ -71,7 +72,7 @@ public class MTableUI extends Application {
     // Returns a new page with the specified pageNumber.
     // Page number is passed (rather than read from global) as not to be dependent on when currentPageNumber is incremented.
     private TablePage newPage(int pageNumber){
-        Button doneButton = new Button("Submit Metadata");
+        Button doneButton = new Button("Start Recording");
         doneButton.setOnAction((event) ->
                 submit());
 
