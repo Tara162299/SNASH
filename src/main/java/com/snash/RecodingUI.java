@@ -14,11 +14,32 @@ public class RecordingUI extends Application {
     //private Scene scene;
 
     public void Start(Stage inputStage) {
-      Scene scene = new Scene();
-      stage.setTitle("Welcome to JavaFX!");
+      GridPane grid = new GridPane();
+      grid.setAlignment(Pos.CENTER);
+      grid.setHgap(10);
+      grid.setVgap(10);
+      grid.setPadding(new Insets(25, 25, 25, 25));
+      Scene scene = new Scene(grid, 300, 275);
+      stage.setTitle("Recording");
       stage.setScene(scene);
       stage.sizeToScene();
       stage.show();
+    }
+
+    private void addRecordButton(Grid grid) {
+      Button btn = new Button("Record");
+      HBox hbBtn = new HBox(10);
+      hbBtn.setAlignment(Pos.BOTTOM_MIDDLE);
+      hbBtn.getChildren().add(btn);
+      grid.add(hbBtn, 1, 4);
+    }
+
+    private void addStopButton(Grid grid) {
+      Button btn = new Button("Stop");
+      HBox hbBtn = new HBox(10);
+      hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
+      hbBtn.getChildren().add(btn);
+      grid.add(hbBtn, 1, 4);
     }
 
     // private ArrayList<TablePage> pages = new ArrayList<>();
