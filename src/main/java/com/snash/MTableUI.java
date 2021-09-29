@@ -1,6 +1,7 @@
 package com.snash;
 
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ public class MTableUI extends Scene {
 
     void submit() {
         finalFilePath = pathFieldText(currentPageNumber);
+        this.setRoot(new RecordingPage());
     }
 
     private String pathFieldText(int pageNumber){
