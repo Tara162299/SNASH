@@ -23,7 +23,7 @@ public class TablePage extends Group {
 
     // Buttons are passed as parameters, as they interact with MTableUI code and can't be initialized here.
     public TablePage(int pageNumber){
-        MTableUI tableUI = (MTableUI) getScene();
+        MTableUI tableUI = (MTableUI) getParent();
 
         grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -43,15 +43,15 @@ public class TablePage extends Group {
 
         Button doneButton = new Button("Start Recording");
         doneButton.setOnAction((event) ->
-                ((MTableUI) getScene()).submit());
+                ((MTableUI) getParent()).submit());
 
         Button previousButton = new Button("Previous");
         previousButton.setOnAction((event) ->
-                ((MTableUI) getScene()).moveToPage(pageNumber - 1));
+                ((MTableUI) getParent()).moveToPage(pageNumber - 1));
 
         Button nextButton = new Button("Next");
         nextButton.setOnAction((event) ->
-                ((MTableUI) getScene()).moveToPage(pageNumber + 1));
+                ((MTableUI) getParent()).moveToPage(pageNumber + 1));
 
         grid.add(previousButton, 0, numFields + fieldGridOffset);
         grid.add(nextButton, 1, numFields + fieldGridOffset);
