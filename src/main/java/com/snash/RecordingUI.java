@@ -7,8 +7,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
-public class RecordingPage extends Group {
-    public RecordingPage(){
+public class RecordingUI extends Group {
+    public RecordingUI(){
 
     }
 }
