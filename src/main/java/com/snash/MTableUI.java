@@ -1,18 +1,17 @@
 package com.snash;
 
 import javafx.scene.Group;
-import javafx.scene.Scene;
 
 import java.util.ArrayList;
 
-public class MTableUI extends Scene {
+public class MTableUI extends Group {
 
     private ArrayList<TablePage> pages = new ArrayList<>();
     private int currentPageNumber = 0;
     private String finalFilePath = null;
 
-    public MTableUI(Group root) {
-        super(root);
+    public MTableUI() {
+        // super(root);
         pages.add(new TablePage(0));
         showPage(0);
     }
@@ -22,8 +21,13 @@ public class MTableUI extends Scene {
     }
 
     private void showPage(int pageNumber){
-        Group root = (Group) getRoot();
-        root.getChildren().add(pages.get(pageNumber));
+        if(pages.size() > 1) {
+            // Remove the currently displayed page before displaying a new one.
+            this.getChildren().remove(0);
+        } else {
+            // Don't remove pages on displaying first page.
+        }
+        this.getChildren().add(pages.get(pageNumber));
     }
 
     // This is a replacement for "nextPage" and "previousPage" to reduce duplicate code.
@@ -47,6 +51,10 @@ public class MTableUI extends Scene {
 
     void submit() {
         finalFilePath = pathFieldText(currentPageNumber);
+
+
+
+        this.getScene().setRoot(new RecordingUI());
     }
 
     private String pathFieldText(int pageNumber){
