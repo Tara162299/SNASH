@@ -23,6 +23,13 @@ public class AudioRecording implements Runnable{
     // the line from which audio data is captured
     TargetDataLine line;
 
+    // the UI that created this
+    RecordingUI recordingUI;
+
+    public AudioRecording(RecordingUI recordingUI) {
+        this.recordingUI = recordingUI;
+    }
+
     // Defines an audio format
     AudioFormat getAudioFormat() {
         float sampleRate = 16000;
@@ -68,6 +75,7 @@ public class AudioRecording implements Runnable{
         line.stop();
         line.close();
         System.out.println("Finished");
+        this.recordingUI.notifyFinished();
     }
 
     // Entry to run the program
@@ -79,8 +87,6 @@ public class AudioRecording implements Runnable{
 
     @Override
     public void run() {
-        final AudioRecording recorder = new AudioRecording();
-
         // creates a new thread that waits for a specified
         // of time before stopping
         Thread stopper = new Thread(() -> {
@@ -89,10 +95,10 @@ public class AudioRecording implements Runnable{
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-            recorder.finish();
+            this.finish();
         });
 
         stopper.start();
-        recorder.start();
+        this.start();
     }
 }
