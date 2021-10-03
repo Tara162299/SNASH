@@ -12,8 +12,15 @@ public class RecordingUI extends Group implements Runnable  {
     public RecordingUI() {
     }
 
+    // need to add finish button/
+    // give user feedback
+
+    void startRecording() {
+
+
+    }
     @Override
     public void run() {
 
     }
-} 
+}
