@@ -8,16 +8,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
-public class RecordingUI extends Group implements Runnable  {
+public class RecordingUI extends Group {
 
     private AudioRecording audioRecording;
 
+    private Text recordingText;
+
     public RecordingUI() {
-    }
-
-    @Override
-    public void run() {
-
+        this.recordingText = new Text(0, 20, "Recording...");
+        this.getChildren().add(recordingText);
     }
 
     public AudioRecording startRecording() {
@@ -27,6 +26,6 @@ public class RecordingUI extends Group implements Runnable  {
     }
 
     public void notifyFinished() {
-
+        this.recordingText.setText("Recording Finished");
     }
 }

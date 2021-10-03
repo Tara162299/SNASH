@@ -15,7 +15,7 @@ public class AudioRecording implements Runnable{
     static final long RECORD_TIME = 4000;  // 4 seconds
 
     // path of the wav file
-    File wavFile = new File("C:/Users/BuiMi/Desktop/Test");
+    File wavFile = new File("C:/Users/Daniel/Desktop/TestRecording");
 
     // format of audio file
     AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE;
