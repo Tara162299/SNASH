@@ -1,12 +1,22 @@
 package com.snash;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import java.Sound;
+import javax.sound.sampled.*;
+import javafx.scene.layout.HBox;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class RecordingUI extends Application {
@@ -20,10 +30,10 @@ public class RecordingUI extends Application {
       grid.setVgap(10);
       grid.setPadding(new Insets(25, 25, 25, 25));
       Scene scene = new Scene(grid, 300, 275);
-      stage.setTitle("Recording");
-      stage.setScene(scene);
-      stage.sizeToScene();
-      stage.show();
+      inputStage.setTitle("Recording");
+      inputStage.setScene(scene);
+      inputStage.sizeToScene();
+      inputStage.show();
     }
 
     private void addRecordButton(Hbox hbBtn, GridPane grid) {
@@ -37,7 +47,7 @@ public class RecordingUI extends Application {
                 label.setText("Accepted");
             }
         });
-      hbBtn.setAlignment(Pos.BOTTOM_MIDDLE);
+      hbBtn.setAlignment(Pos.BOTTOM_CENTER);
       hbBtn.getChildren().add(btn);
       grid.add(hbBtn, 1, 4);
     }
@@ -50,6 +60,10 @@ public class RecordingUI extends Application {
       grid.add(hbBtn, 1, 4);
     }
 
+    @Override
+    public void start(Stage stage) throws Exception {
+
+    }
 
 
     // private ArrayList<TablePage> pages = new ArrayList<>();
