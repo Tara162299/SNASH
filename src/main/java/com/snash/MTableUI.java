@@ -51,6 +51,9 @@ public class MTableUI extends Group {
 
     void submit() {
         finalFilePath = pathFieldText(currentPageNumber);
+
+
+
         this.getScene().setRoot(new RecordingUI());
     }
 

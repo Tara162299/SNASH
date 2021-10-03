@@ -3,10 +3,16 @@ package com.snash;
 import javax.sound.sampled.*;
 import java.io.*;
 
+        //Define an audio format of the sound source to be captured, using the class AudioFormat.
+        //Create a DataLine.Info object to hold information of a data line.
+        //Obtain a TargetDataLine object which represents an input data line from which audio data can be captured, using the method getLineInfo(DataLine.Info) of the AudioSystem class.
+        //Open and start the target data line to begin capturing audio data.
+        //Create an AudioInputStream object to read data from the target data line.
 
-public class AudioRecording {
+
+public class AudioRecording implements Runnable{
     // record duration, in milliseconds
-    static final long RECORD_TIME = 60000;  // 1 minute
+    static final long RECORD_TIME = 4000;  // 4 seconds
 
     // path of the wav file
     File wavFile = new File("C:/Users/BuiMi/Desktop/Test");
@@ -17,17 +23,13 @@ public class AudioRecording {
     // the line from which audio data is captured
     TargetDataLine line;
 
-
     // Defines an audio format
     AudioFormat getAudioFormat() {
         float sampleRate = 16000;
         int sampleSizeInBits = 8;
         int channels = 2;
-        boolean signed = true;
-        boolean bigEndian = true;
-        AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits,
-                channels, signed, bigEndian);
-        return format;
+        return new AudioFormat(sampleRate, sampleSizeInBits,
+                channels, true, true);
     }
 
     // Captures the sound and record into a WAV file
@@ -55,10 +57,8 @@ public class AudioRecording {
             // start recording
             AudioSystem.write(ais, fileType, wavFile);
 
-        } catch (LineUnavailableException ex) {
+        } catch (LineUnavailableException | IOException ex) {
             ex.printStackTrace();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
         }
     }
 
@@ -71,21 +71,25 @@ public class AudioRecording {
     }
 
     // Entry to run the program
+//
+//    public static void main(String[] args) {
+//       AudioRecording test = new AudioRecording();
+//       test.run();
+//    }
 
-    public static void main(String[] args) {
+    @Override
+    public void run() {
         final AudioRecording recorder = new AudioRecording();
 
         // creates a new thread that waits for a specified
         // of time before stopping
-        Thread stopper = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(RECORD_TIME);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-                recorder.finish();
+        Thread stopper = new Thread(() -> {
+            try {
+                Thread.sleep(RECORD_TIME);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
             }
+            recorder.finish();
         });
 
         stopper.start();
