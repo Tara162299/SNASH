@@ -8,7 +8,11 @@ public class MTableUI extends Group {
 
     private ArrayList<TablePage> pages = new ArrayList<>();
     private int currentPageNumber = 0;
+
     private String finalFilePath = null;
+    private ArrayList<String> metadataNames = new ArrayList<>();
+    private ArrayList<String> metadataFields = new ArrayList<>();
+
 
     public MTableUI() {
         // super(root);
@@ -51,10 +55,23 @@ public class MTableUI extends Group {
 
     void submit() {
         finalFilePath = pathFieldText(currentPageNumber);
+        metadataNames = metadataFromTable(0);
+        metadataFields = metadataFromTable(1);
         this.getScene().setRoot(new RecordingUI());
     }
 
     private String pathFieldText(int pageNumber){
         return pages.get(pageNumber).getPathFieldText();
+    }
+
+    private ArrayList<String> metadataFromTable(int column){
+        ArrayList<String> metadata = new ArrayList<>();
+        for (TablePage page : pages){
+            metadata.addAll(null);
+        }
+
+
+
+        return metadata;
     }
 }

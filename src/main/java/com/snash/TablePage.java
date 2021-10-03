@@ -8,6 +8,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class TablePage extends Group {
 
