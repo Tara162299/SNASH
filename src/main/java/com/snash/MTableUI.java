@@ -21,6 +21,12 @@ public class MTableUI extends Group {
     }
 
     private void showPage(int pageNumber){
+        if(pages.size() > 1) {
+            // Remove the currently displayed page before displaying a new one.
+            this.getChildren().remove(0);
+        } else {
+            // Don't remove pages on displaying first page.
+        }
         this.getChildren().add(pages.get(pageNumber));
     }
 
