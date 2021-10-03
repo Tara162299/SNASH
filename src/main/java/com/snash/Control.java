@@ -2,6 +2,7 @@ package com.snash;
 
 import javafx.application.Application;
 import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -14,9 +15,8 @@ public class Control extends Application {
     @Override
     public void start(Stage stage) {
         stage.setTitle("Enter Metadata");
-        MTableUI tableScene = new MTableUI(new Group());
-        stage.setScene(tableScene);
+        stage.setScene(new Scene(new MTableUI()));
         stage.show();
-        System.out.println(tableScene.getFilePath());
+        // System.out.println(tableScene.getFilePath());
     }
 }
