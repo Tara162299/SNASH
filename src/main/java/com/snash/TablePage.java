@@ -45,11 +45,7 @@ public class TablePage extends Group {
 
         Button recordButton = new Button("Start Recording");
         recordButton.setOnAction(actionEvent -> {
-
             ((MTableUI) getParent()).submit();
-            AudioRecording test = new AudioRecording();
-            test.run();
-
         });
 
         Button previousButton = new Button("Previous");
@@ -75,4 +71,6 @@ public class TablePage extends Group {
     public void setPathFieldText(String pathFieldText){
         pathField.setText(pathFieldText);
     }
-  }
+
+
+}

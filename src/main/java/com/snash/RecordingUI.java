@@ -8,19 +8,24 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
-public class RecordingUI extends Group implements Runnable  {
+public class RecordingUI extends Group {
+
+    private AudioRecording audioRecording;
+
+    private Text recordingText;
+
     public RecordingUI() {
+        this.recordingText = new Text(0, 20, "Recording...");
+        this.getChildren().add(recordingText);
     }
 
-    // need to add finish button/
-    // give user feedback
-
-    void startRecording() {
-
-
+    public AudioRecording startRecording() {
+        this.audioRecording = new AudioRecording(this);
+        audioRecording.run();
+        return audioRecording;
     }
-    @Override
-    public void run() {
 
+    public void notifyFinished() {
+        this.recordingText.setText("Recording Finished");
     }
 }

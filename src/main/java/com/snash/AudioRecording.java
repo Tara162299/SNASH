@@ -15,14 +15,20 @@ public class AudioRecording implements Runnable{
     static final long RECORD_TIME = 4000;  // 4 seconds
 
     // path of the wav file
-    //File wavFile = new File("C:/Users/BuiMi/Desktop/Test");
-    File wavFile = new File("C:\Users\shivv\OneDrive\Desktop\Temp and delete (for SNASH)");
+    File wavFile = new File("C:/Users/Daniel/Desktop/TestRecording");
 
     // format of audio file
     AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE;
 
     // the line from which audio data is captured
     TargetDataLine line;
+
+    // the UI that created this
+    RecordingUI recordingUI;
+
+    public AudioRecording(RecordingUI recordingUI) {
+        this.recordingUI = recordingUI;
+    }
 
     // Defines an audio format
     AudioFormat getAudioFormat() {
@@ -69,6 +75,7 @@ public class AudioRecording implements Runnable{
         line.stop();
         line.close();
         System.out.println("Finished");
+        this.recordingUI.notifyFinished();
     }
 
     // Entry to run the program
@@ -80,8 +87,6 @@ public class AudioRecording implements Runnable{
 
     @Override
     public void run() {
-        final AudioRecording recorder = new AudioRecording();
-
         // creates a new thread that waits for a specified
         // of time before stopping
         Thread stopper = new Thread(() -> {
@@ -90,10 +95,10 @@ public class AudioRecording implements Runnable{
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-            recorder.finish();
+            this.finish();
         });
 
         stopper.start();
-        recorder.start();
+        this.start();
     }
 }
