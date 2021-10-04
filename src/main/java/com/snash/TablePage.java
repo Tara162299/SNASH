@@ -71,6 +71,3 @@ public class TablePage extends Group {
     public void setPathFieldText(String pathFieldText){
         pathField.setText(pathFieldText);
     }
-
-
-}
