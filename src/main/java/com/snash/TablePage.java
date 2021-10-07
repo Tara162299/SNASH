@@ -1,5 +1,7 @@
 package com.snash;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
@@ -41,9 +43,10 @@ public class TablePage extends Group {
             grid.add(fieldValues.get(i), 1, i + fieldGridOffset);
         }
 
-        Button doneButton = new Button("Start Recording");
-        doneButton.setOnAction((event) ->
-                ((MTableUI) getParent()).submit());
+        Button recordButton = new Button("Start Recording");
+        recordButton.setOnAction(actionEvent -> {
+            ((MTableUI) getParent()).submit();
+        });
 
         Button previousButton = new Button("Previous");
         previousButton.setOnAction((event) ->
@@ -55,7 +58,7 @@ public class TablePage extends Group {
 
         grid.add(previousButton, 0, numFields + fieldGridOffset);
         grid.add(nextButton, 1, numFields + fieldGridOffset);
-        grid.add(doneButton, 0, numFields + fieldGridOffset + 1);
+        grid.add(recordButton, 0, numFields + fieldGridOffset + 1);
         grid.add(new Text("Page " + (pageNumber + 1)), 1, numFields + fieldGridOffset + 1);
 
 
