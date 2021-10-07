@@ -14,13 +14,17 @@ public class RecordingUI extends Group {
 
     private Text recordingText;
 
-    public RecordingUI() {
+    private Metadata metadata;
+
+    public RecordingUI(Metadata metadata) {
+        this.metadata = metadata;
         this.recordingText = new Text(0, 20, "Recording...");
         this.getChildren().add(recordingText);
     }
 
     public AudioRecording startRecording() {
         this.audioRecording = new AudioRecording(this);
+        audioRecording.setMetadata(metadata);
         audioRecording.run();
         return audioRecording;
     }
@@ -28,4 +32,5 @@ public class RecordingUI extends Group {
     public void notifyFinished() {
         this.recordingText.setText("Recording Finished");
     }
+
 }
