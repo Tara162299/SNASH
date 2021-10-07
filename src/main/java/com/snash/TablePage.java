@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 
 import java.util.ArrayList;
 
@@ -25,7 +26,6 @@ public class TablePage extends Group {
 
     // Buttons are passed as parameters, as they interact with MTableUI code and can't be initialized here.
     public TablePage(int pageNumber){
-        MTableUI tableUI = (MTableUI) getParent();
 
         grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -34,7 +34,11 @@ public class TablePage extends Group {
 
         Text pathText = new Text("Save Location");
         grid.add(pathText, 0, 0);
-        grid.add(pathField, 1, 0);
+
+        Button chooseFilepathButton = new Button("Choose Save Path");
+        chooseFilepathButton.setOnAction((event) ->
+                ((MTableUI) getParent()).chooseFilePath());
+        grid.add(chooseFilepathButton, 1, 0);
 
         for(int i = 0; i < numFields; i++){
             fieldNames.add(new TextField());
@@ -61,16 +65,7 @@ public class TablePage extends Group {
         grid.add(recordButton, 0, numFields + fieldGridOffset + 1);
         grid.add(new Text("Page " + (pageNumber + 1)), 1, numFields + fieldGridOffset + 1);
 
-
         getChildren().add(grid);
     }
-
-    public String getPathFieldText(){
-        return pathField.getText();
-    }
-    public void setPathFieldText(String pathFieldText){
-        pathField.setText(pathFieldText);
-    }
-
 
 }

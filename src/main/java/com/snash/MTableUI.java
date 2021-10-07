@@ -2,22 +2,20 @@ package com.snash;
 
 import javafx.scene.Group;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 public class MTableUI extends Group {
 
     private ArrayList<TablePage> pages = new ArrayList<>();
     private int currentPageNumber = 0;
-    private String finalFilePath = null;
+    private Metadata metadata = null;
+    private String filePath = null;
 
     public MTableUI() {
         // super(root);
         pages.add(new TablePage(0));
         showPage(0);
-    }
-
-    public String getFilePath(){
-        return finalFilePath;
     }
 
     private void showPage(int pageNumber){
@@ -37,26 +35,36 @@ public class MTableUI extends Group {
             return;
         }
 
-        String pathFieldText = pathFieldText(currentPageNumber);
-
         // If the page number is too high, add more pages.
         for (int i = pages.size(); i <= pageNumber; i++){
             TablePage newPage = new TablePage(i);
             pages.add(newPage);
         }
-        pages.get(pageNumber).setPathFieldText(pathFieldText);
         showPage(pageNumber);
         currentPageNumber = pageNumber;
     }
 
+    void chooseFilePath(){
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    }
+
     void submit() {
-        finalFilePath = pathFieldText(currentPageNumber);
-        RecordingUI recordingUI = new RecordingUI();
+        metadata = temporaryMetadataREMOVETHIS();
+
+        if(filePath == null) { return; }
+        if(metadata == null) { return; }
+
+        metadata.setFilePath(filePath);
+
+        RecordingUI recordingUI = new RecordingUI(metadata);
         this.getScene().setRoot(recordingUI);
         recordingUI.startRecording();
     }
 
-    private String pathFieldText(int pageNumber){
-        return pages.get(pageNumber).getPathFieldText();
+    // A blank metadata to bypass the metadata == null check, just for now.
+    // Remove this once JSON -> Metadata is implemented!!
+    private Metadata temporaryMetadataREMOVETHIS(){
+        return new Metadata(new String[0], new String[0]);
     }
 }
