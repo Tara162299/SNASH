@@ -8,9 +8,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TablePage extends Group {
 
@@ -20,6 +20,7 @@ public class TablePage extends Group {
     public static final int fieldGridOffset = 1;
 
     private GridPane grid;
+    // Should be made into Text objects once json files are readable.
     private ArrayList<TextField> fieldNames = new ArrayList<>();
     private ArrayList<TextField> fieldValues = new ArrayList<>();
     private TextField pathField = new TextField();
@@ -34,11 +35,7 @@ public class TablePage extends Group {
 
         Text pathText = new Text("Save Location");
         grid.add(pathText, 0, 0);
-
-        Button chooseFilepathButton = new Button("Choose Save Path");
-        chooseFilepathButton.setOnAction((event) ->
-                ((MTableUI) getParent()).chooseFilePath());
-        grid.add(chooseFilepathButton, 1, 0);
+        grid.add(pathField, 1, 0);
 
         for(int i = 0; i < numFields; i++){
             fieldNames.add(new TextField());
@@ -67,5 +64,33 @@ public class TablePage extends Group {
 
         getChildren().add(grid);
     }
+
+    public List<String> getFieldNames(){
+        List<String> output = new ArrayList<>();
+        for (TextField name : fieldNames) {
+            if (!name.getText().isEmpty()) {
+                output.add(name.getText());
+            }
+        }
+        return output;
+    }
+
+    public List<String> getFieldValues(){
+        List<String> output = new ArrayList<>();
+        for (TextField value : fieldValues) {
+            if (!value.getText().isEmpty()){
+                output.add(value.getText());
+            }
+        }
+        return output;
+    }
+
+    public String getPathFieldText(){
+        return pathField.getText();
+    }
+    public void setPathFieldText(String pathFieldText){
+        pathField.setText(pathFieldText);
+    }
+
 
 }

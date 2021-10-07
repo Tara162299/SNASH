@@ -2,7 +2,6 @@ package com.snash;
 
 import javafx.scene.Group;
 
-import javax.swing.*;
 import java.util.ArrayList;
 
 public class MTableUI extends Group {
@@ -10,7 +9,6 @@ public class MTableUI extends Group {
     private ArrayList<TablePage> pages = new ArrayList<>();
     private int currentPageNumber = 0;
     private Metadata metadata = null;
-    private String filePath = null;
 
     public MTableUI() {
         // super(root);
@@ -35,36 +33,44 @@ public class MTableUI extends Group {
             return;
         }
 
+        String pathFieldText = pathFieldText(currentPageNumber);
+
         // If the page number is too high, add more pages.
         for (int i = pages.size(); i <= pageNumber; i++){
             TablePage newPage = new TablePage(i);
             pages.add(newPage);
         }
+        pages.get(pageNumber).setPathFieldText(pathFieldText);
         showPage(pageNumber);
         currentPageNumber = pageNumber;
     }
 
-    void chooseFilePath(){
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    }
-
     void submit() {
-        metadata = temporaryMetadataREMOVETHIS();
+        String finalFilePath = pathFieldText(currentPageNumber);
+        if(finalFilePath.isEmpty()) { return; }
+/*        if(metadata == null) { return; }
 
-        if(filePath == null) { return; }
-        if(metadata == null) { return; }
+        setValues(metadata);
+        metadata.setFilePath(finalFilePath);*/
 
-        metadata.setFilePath(filePath);
-
-        RecordingUI recordingUI = new RecordingUI(metadata);
+        RecordingUI recordingUI = new RecordingUI(null);
         this.getScene().setRoot(recordingUI);
         recordingUI.startRecording();
     }
 
-    // A blank metadata to bypass the metadata == null check, just for now.
-    // Remove this once JSON -> Metadata is implemented!!
-    private Metadata temporaryMetadataREMOVETHIS(){
-        return new Metadata(new String[0], new String[0]);
+    private void setValues(Metadata metadata){
+        ArrayList<String> fieldNames = new ArrayList<>();
+        ArrayList<String> fieldValues = new ArrayList<>();
+        for (TablePage page : pages){
+            fieldNames.addAll(page.getFieldNames());
+            fieldValues.addAll(page.getFieldValues());
+        }
+        for (int i = 0; i < fieldValues.size(); i++){
+            metadata.setValueOfAlias(fieldValues.get(i), fieldNames.get(i));
+        }
+    }
+
+    private String pathFieldText(int pageNumber){
+        return pages.get(pageNumber).getPathFieldText();
     }
 }

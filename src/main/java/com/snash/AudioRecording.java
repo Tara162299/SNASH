@@ -48,7 +48,8 @@ public class AudioRecording implements Runnable{
 
     void start() {
         try {
-            wavFile = new File(metadata.getFilePath());
+            //wavFile = new File(metadata.getFilePath());
+            wavFile = new File("C:/Users/Daniel/Desktop/TestRecording");
             AudioFormat format = getAudioFormat();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
