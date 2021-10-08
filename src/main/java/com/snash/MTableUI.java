@@ -8,16 +8,12 @@ public class MTableUI extends Group {
 
     private ArrayList<TablePage> pages = new ArrayList<>();
     private int currentPageNumber = 0;
-    private String finalFilePath = null;
+    private Metadata metadata = null;
 
     public MTableUI() {
         // super(root);
         pages.add(new TablePage(0));
         showPage(0);
-    }
-
-    public String getFilePath(){
-        return finalFilePath;
     }
 
     private void showPage(int pageNumber){
@@ -50,10 +46,28 @@ public class MTableUI extends Group {
     }
 
     void submit() {
-        finalFilePath = pathFieldText(currentPageNumber);
-        RecordingUI recordingUI = new RecordingUI();
+        String finalFilePath = pathFieldText(currentPageNumber);
+        if(finalFilePath.isEmpty()) { return; }
+/*        if(metadata == null) { return; }
+
+        setValues(metadata);
+        metadata.setFilePath(finalFilePath);*/
+
+        RecordingUI recordingUI = new RecordingUI(null);
         this.getScene().setRoot(recordingUI);
         recordingUI.startRecording();
+    }
+
+    private void setValues(Metadata metadata){
+        ArrayList<String> fieldNames = new ArrayList<>();
+        ArrayList<String> fieldValues = new ArrayList<>();
+        for (TablePage page : pages){
+            fieldNames.addAll(page.getFieldNames());
+            fieldValues.addAll(page.getFieldValues());
+        }
+        for (int i = 0; i < fieldValues.size(); i++){
+            metadata.setValueOfAlias(fieldValues.get(i), fieldNames.get(i));
+        }
     }
 
     private String pathFieldText(int pageNumber){
