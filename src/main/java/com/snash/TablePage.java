@@ -10,7 +10,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TablePage extends Group {
 
@@ -20,13 +19,13 @@ public class TablePage extends Group {
     public static final int fieldGridOffset = 1;
 
     private GridPane grid;
-    // Should be made into Text objects once json files are readable.
     private ArrayList<TextField> fieldNames = new ArrayList<>();
     private ArrayList<TextField> fieldValues = new ArrayList<>();
     private TextField pathField = new TextField();
 
     // Buttons are passed as parameters, as they interact with MTableUI code and can't be initialized here.
     public TablePage(int pageNumber){
+        MTableUI tableUI = (MTableUI) getParent();
 
         grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -62,27 +61,8 @@ public class TablePage extends Group {
         grid.add(recordButton, 0, numFields + fieldGridOffset + 1);
         grid.add(new Text("Page " + (pageNumber + 1)), 1, numFields + fieldGridOffset + 1);
 
+
         getChildren().add(grid);
-    }
-
-    public List<String> getFieldNames(){
-        List<String> output = new ArrayList<>();
-        for (TextField name : fieldNames) {
-            if (!name.getText().isEmpty()) {
-                output.add(name.getText());
-            }
-        }
-        return output;
-    }
-
-    public List<String> getFieldValues(){
-        List<String> output = new ArrayList<>();
-        for (TextField value : fieldValues) {
-            if (!value.getText().isEmpty()){
-                output.add(value.getText());
-            }
-        }
-        return output;
     }
 
     public String getPathFieldText(){

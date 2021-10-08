@@ -14,9 +14,8 @@ public class AudioRecording implements Runnable{
     // record duration, in milliseconds
     static final long RECORD_TIME = 4000;  // 4 seconds
 
-    Metadata metadata;
-
-    File wavFile;
+    // path of the wav file
+    File wavFile = new File("C:\Users\shivv\OneDrive\Desktop\Temp and delete (for SNASH)\Temp");
 
     // format of audio file
     AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE;
@@ -29,10 +28,6 @@ public class AudioRecording implements Runnable{
 
     public AudioRecording(RecordingUI recordingUI) {
         this.recordingUI = recordingUI;
-    }
-
-    public void setMetadata(Metadata metadata){
-        this.metadata = metadata;
     }
 
     // Defines an audio format
@@ -48,8 +43,6 @@ public class AudioRecording implements Runnable{
 
     void start() {
         try {
-            //wavFile = new File(metadata.getFilePath());
-            wavFile = new File("C:/Users/Daniel/Desktop/TestRecording");
             AudioFormat format = getAudioFormat();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
