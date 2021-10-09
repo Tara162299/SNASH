@@ -1,0 +1,10 @@
+<?xml version = "1.0"?>
+<config>
+   <metadata>
+      <name>testName</name>
+      <alias>testAlias</alias>
+      <fixedValue>testFixed</fixedValue>
+      <defaultValue>testDefault</defaultValue>
+      <specialValue>time</specialValue>
+   </metadata>
+</config>
