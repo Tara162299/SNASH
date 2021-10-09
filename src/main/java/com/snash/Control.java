@@ -19,7 +19,7 @@ public class Control extends Application {
 
     @Override
     public void start(Stage stage) throws ParserConfigurationException, IOException, SAXException {
-        ConfigurationData config = new ConfigurationData(new File("C:\\Users\\Daniel\\Desktop\\config.xml"));
+        ConfigurationData config = new ConfigurationData(new File("test_config.xml"));
         stage.setTitle("Enter Metadata");
         stage.setScene(new Scene(new MTableUI()));
         stage.show();
