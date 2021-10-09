@@ -12,7 +12,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Locale;
 
 public class ConfigurationData {
     // TODO add upload configuration data
@@ -89,7 +88,7 @@ public class ConfigurationData {
                 Element fieldElement = (Element) field;
                 NodeList tags = fieldElement.getElementsByTagName("name");
                 String name = tags.item(0).getTextContent();
-                tags = fieldElement.getElementsByTagName("title");
+                tags = fieldElement.getElementsByTagName("alias");
                 String alias = tags.item(0).getTextContent();
                 tags = fieldElement.getElementsByTagName("fixedValue");
                 String fixedValue = tags.item(0).getTextContent();
