@@ -86,16 +86,28 @@ public class ConfigurationData {
             if (field.getNodeType() == Node.ELEMENT_NODE) {
                 // TODO handle missing unnecessary fields rather than requiring all
                 Element fieldElement = (Element) field;
+                String name = null, alias = null, fixedValue = null, defaultValue = null;
+                SpecialValue specialValue = null;
                 NodeList tags = fieldElement.getElementsByTagName("name");
-                String name = tags.item(0).getTextContent();
+                if (tags.getLength() > 0) {
+                    name = tags.item(0).getTextContent();
+                }
                 tags = fieldElement.getElementsByTagName("alias");
-                String alias = tags.item(0).getTextContent();
+                if (tags.getLength() > 0) {
+                    alias = tags.item(0).getTextContent();
+                }
                 tags = fieldElement.getElementsByTagName("fixedValue");
-                String fixedValue = tags.item(0).getTextContent();
+                if (tags.getLength() > 0) {
+                    fixedValue = tags.item(0).getTextContent();
+                }
                 tags = fieldElement.getElementsByTagName("defaultValue");
-                String defaultValue = tags.item(0).getTextContent();
+                if (tags.getLength() > 0) {
+                     defaultValue = tags.item(0).getTextContent();
+                }
                 tags = fieldElement.getElementsByTagName("specialValue");
-                SpecialValue specialValue = stringToSpecialValue(tags.item(0).getTextContent());
+                if (tags.getLength() > 0) {
+                    specialValue = stringToSpecialValue(tags.item(0).getTextContent());
+                }
 
                 dataField newData = new dataField(name, alias, fixedValue, defaultValue, specialValue);
                 if (name.startsWith("FileName")) {
@@ -128,11 +140,15 @@ public class ConfigurationData {
 
     private SpecialValue stringToSpecialValue(String string) {
         String str = string.toLowerCase();
-        return switch (str) {
-            case "time" -> SpecialValue.Time;
-            case "date" -> SpecialValue.Date;
-            case "timezone" -> SpecialValue.Timezone;
-            default -> null;
-        };
+        switch (str) {
+            case "time":
+                return SpecialValue.Time;
+            case "date":
+                return SpecialValue.Date;
+            case "timezone":
+                return SpecialValue.Timezone;
+            default:
+                return null;
+        }
     }
 }
