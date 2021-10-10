@@ -5,12 +5,14 @@ import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.scene.control.TextArea;
 
 public class RecordingUI extends Group {
 
     private AudioRecording audioRecording;
 
     private Text recordingText;
+    private Text stopText;
 
     private Button returnButton;
     private Button restartButton;
@@ -27,26 +29,26 @@ public class RecordingUI extends Group {
         grid.setHgap(10);
         grid.setVgap(10);
 
-        this.stopButton = new Button("Stop");
-        this.stopButton.setOnAction(actionEvent -> {
+        stopButton = new Button("Stop");
+        stopButton.setOnAction(actionEvent -> {
             RecordingUI recordingUI = new RecordingUI();
             this.getScene().setRoot(recordingUI);
             recordingUI.stopRecording();
 
         });
 
-        this.returnButton = new Button("Return");
-        this.returnButton.setOnAction(actionEvent -> {
+        returnButton = new Button("Return");
+        returnButton.setOnAction(actionEvent -> {
 
         });
 
-        this.restartButton = new Button("Restart");
-        this.restartButton.setOnAction(actionEvent -> {
+        restartButton = new Button("Restart");
+        restartButton.setOnAction(actionEvent -> {
 
         });
 
-        this.startButton = new Button("Start");
-        this.startButton.setOnAction(actionEvent -> {
+        startButton = new Button("Start");
+        startButton.setOnAction(actionEvent -> {
             RecordingUI recordingUI = new RecordingUI();
             this.getScene().setRoot(recordingUI);
             recordingUI.startRecording();
@@ -72,11 +74,9 @@ public class RecordingUI extends Group {
     public AudioRecording stopRecording() {
         this.audioRecording = new AudioRecording(this);
         audioRecording.stop();
+        this.stopText = new Text(10, 20, "Record stopped");
+        this.getChildren().add(stopText);
         return audioRecording;
-    }
-
-    public void notifyFinished() {
-        this.recordingText.setText("Recording Finished");
     }
 
     public void notifyRecording() {

@@ -75,13 +75,15 @@ public class AudioRecording implements Runnable{
 
     void finish() {
         line.stop();
+        line.flush();
         line.close();
         System.out.println("Finished");
-        this.recordingUI.notifyFinished();
     }
 
     void stop() {
-
+        line.stop();
+        line.flush();
+        line.close();
         System.out.println("Recording stopped");
     }
 
