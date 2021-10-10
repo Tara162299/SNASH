@@ -128,11 +128,15 @@ public class ConfigurationData {
 
     private SpecialValue stringToSpecialValue(String string) {
         String str = string.toLowerCase();
-        return switch (str) {
-            case "time" -> SpecialValue.Time;
-            case "date" -> SpecialValue.Date;
-            case "timezone" -> SpecialValue.Timezone;
-            default -> null;
-        };
+        switch (str) {
+            case "time":
+                return SpecialValue.Time;
+            case "date":
+                return SpecialValue.Date;
+            case "timezone":
+                return SpecialValue.Timezone;
+            default:
+                return null;
+        }
     }
 }
