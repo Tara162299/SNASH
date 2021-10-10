@@ -7,4 +7,9 @@
       <defaultValue>testDefault</defaultValue>
       <specialValue>time</specialValue>
    </metadata>
+
+   <metadata>
+      <name>semi_name</name>
+      <alias>semi_alias</alias>
+   </metadata>
 </config>
