@@ -1,14 +1,18 @@
 package com.snash;
 
 import javafx.scene.Group;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MTableUI extends Group {
 
-    private ArrayList<TablePage> pages = new ArrayList<>();
-    private int currentPageNumber = 0;
+    private final ArrayList<TablePage> pages = new ArrayList<>();
     private Metadata metadata = null;
+    private String path = null;
 
     public MTableUI() {
         // super(root);
@@ -33,22 +37,17 @@ public class MTableUI extends Group {
             return;
         }
 
-        String pathFieldText = pathFieldText(currentPageNumber);
-
         // If the page number is too high, add more pages.
         for (int i = pages.size(); i <= pageNumber; i++){
             TablePage newPage = new TablePage(i);
             pages.add(newPage);
         }
-        pages.get(pageNumber).setPathFieldText(pathFieldText);
         showPage(pageNumber);
-        currentPageNumber = pageNumber;
     }
 
     void submit() {
-        String finalFilePath = pathFieldText(currentPageNumber);
-        if(finalFilePath.isEmpty()) { return; }
-/*        if(metadata == null) { return; }
+        if(path.isEmpty()) { return; }
+/*      if(metadata == null) { return; }
 
         setValues(metadata);
         metadata.setFilePath(finalFilePath);*/
@@ -56,6 +55,18 @@ public class MTableUI extends Group {
         RecordingUI recordingUI = new RecordingUI(null);
         this.getScene().setRoot(recordingUI);
         recordingUI.startRecording();
+    }
+
+    void setPath(String path){
+        this.path = path;
+    }
+
+    void createMetadata(File xml) {
+        try {
+            ConfigurationData config = new ConfigurationData(xml);
+        } catch (Exception e){
+            // Don't create any metadata.
+        }
     }
 
     private void setValues(Metadata metadata){
@@ -68,9 +79,5 @@ public class MTableUI extends Group {
         for (int i = 0; i < fieldValues.size(); i++){
             metadata.setValueOfAlias(fieldValues.get(i), fieldNames.get(i));
         }
-    }
-
-    private String pathFieldText(int pageNumber){
-        return pages.get(pageNumber).getPathFieldText();
     }
 }

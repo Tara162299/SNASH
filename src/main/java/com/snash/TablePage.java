@@ -1,7 +1,5 @@
 package com.snash;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
@@ -9,6 +7,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,23 +20,41 @@ public class TablePage extends Group {
     // How many hardcoded lines come before the field grid, i.e. buttons or filepath field.
     public static final int fieldGridOffset = 1;
 
-    private GridPane grid;
-    // Should be made into Text objects once json files are readable.
-    private ArrayList<TextField> fieldNames = new ArrayList<>();
-    private ArrayList<TextField> fieldValues = new ArrayList<>();
-    private TextField pathField = new TextField();
+    // fieldNames should be made into Text objects once json files are readable.
+    private final ArrayList<TextField> fieldNames = new ArrayList<>();
+    private final ArrayList<TextField> fieldValues = new ArrayList<>();
 
-    // Buttons are passed as parameters, as they interact with MTableUI code and can't be initialized here.
     public TablePage(int pageNumber){
 
-        grid = new GridPane();
+        GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
 
-        Text pathText = new Text("Save Location");
-        grid.add(pathText, 0, 0);
-        grid.add(pathField, 1, 0);
+        Button chooseConfigButton = new Button("Choose Configuration File");
+        chooseConfigButton.setOnAction((event) -> {
+            JFileChooser chooser = new JFileChooser();
+            FileFilter xmlFilter = new FileNameExtensionFilter("XML file", "xml");
+            chooser.setFileFilter(xmlFilter);
+            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            chooser.showOpenDialog(null);
+            if(chooser.getSelectedFile() != null){
+                ((MTableUI) getParent()).createMetadata(chooser.getSelectedFile());
+            }
+        });
+
+        Button choosePathButton = new Button("Choose Save Location");
+        choosePathButton.setOnAction((event) -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            chooser.showOpenDialog(null);
+            if(chooser.getSelectedFile() != null){
+                ((MTableUI) getParent()).setPath(chooser.getSelectedFile().getPath());
+            }
+        });
+
+        grid.add(chooseConfigButton, 0, 0);
+        grid.add(choosePathButton, 1, 0);
 
         for(int i = 0; i < numFields; i++){
             fieldNames.add(new TextField());
@@ -45,9 +64,8 @@ public class TablePage extends Group {
         }
 
         Button recordButton = new Button("Start Recording");
-        recordButton.setOnAction(actionEvent -> {
-            ((MTableUI) getParent()).submit();
-        });
+        recordButton.setOnAction(actionEvent ->
+            ((MTableUI) getParent()).submit());
 
         Button previousButton = new Button("Previous");
         previousButton.setOnAction((event) ->
@@ -83,13 +101,6 @@ public class TablePage extends Group {
             }
         }
         return output;
-    }
-
-    public String getPathFieldText(){
-        return pathField.getText();
-    }
-    public void setPathFieldText(String pathFieldText){
-        pathField.setText(pathFieldText);
     }
 
 
