@@ -80,12 +80,10 @@ public class AudioRecording implements Runnable{
         this.recordingUI.notifyFinished();
     }
 
-    // Entry to run the program
-//
-//    public static void main(String[] args) {
-//       AudioRecording test = new AudioRecording();
-//       test.run();
-//    }
+    void stop() {
+
+        System.out.println("Recording stopped");
+    }
 
     @Override
     public void run() {
