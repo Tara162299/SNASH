@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -44,8 +45,12 @@ public class TablePage extends Group {
         }
 
         Button recordButton = new Button("Start Recording");
+        RecordingUI recordingUI = new RecordingUI();
+        Scene scene = new Scene(recordingUI);
+
         recordButton.setOnAction(actionEvent -> {
-            ((MTableUI) getParent()).submit();
+            //((MTableUI) getParent()).;
+            ((MTableUI) getParent()).toRecordingUI();
         });
 
         Button previousButton = new Button("Previous");

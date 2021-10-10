@@ -15,7 +15,7 @@ public class AudioRecording implements Runnable{
     static final long RECORD_TIME = 4000;  // 4 seconds
 
     // path of the wav file
-    File wavFile = new File("C:\Users\shivv\OneDrive\Desktop\Temp and delete (for SNASH)\Temp");
+    File wavFile = new File("C:\\Users\\BuiMi\\Desktop\\Test.wav");
 
     // format of audio file
     AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE;
@@ -42,6 +42,8 @@ public class AudioRecording implements Runnable{
     // Captures the sound and record into a WAV file
 
     void start() {
+
+
         try {
             AudioFormat format = getAudioFormat();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
@@ -53,7 +55,7 @@ public class AudioRecording implements Runnable{
             }
             line = (TargetDataLine) AudioSystem.getLine(info);
             line.open(format);
-            line.start();   // start capturing
+            line.start();  // start capturing
 
             System.out.println("Start capturing...");
 

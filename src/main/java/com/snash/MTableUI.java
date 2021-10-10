@@ -1,6 +1,8 @@
 package com.snash;
 
 import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
@@ -54,6 +56,15 @@ public class MTableUI extends Group {
         RecordingUI recordingUI = new RecordingUI();
         this.getScene().setRoot(recordingUI);
         recordingUI.startRecording();
+    }
+
+    void toRecordingUI () {
+        Stage stage = new Stage();
+        RecordingUI recordingUI = new RecordingUI();
+        Scene scene = new Scene(recordingUI);
+
+        stage.setScene(scene);
+        stage.show();
     }
 
     private String pathFieldText(int pageNumber){

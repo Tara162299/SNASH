@@ -1,11 +1,7 @@
 package com.snash;
 
-import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
 public class RecordingUI extends Group {
@@ -15,6 +11,28 @@ public class RecordingUI extends Group {
     private Text recordingText;
 
     public RecordingUI() {
+
+        Button stopRecordingButton = new Button("Stop");
+        stopRecordingButton.setOnAction(actionEvent -> {
+            //((MTableUI) getParent()).submit();
+            //this.
+        });
+
+        Button returnButton = new Button("Return");
+        returnButton.setOnAction(actionEvent -> {
+            //((MTableUI) getParent()).submit();
+        });
+
+        Button restartButton = new Button("restart Recording");
+        returnButton.setOnAction(actionEvent -> {
+            //((MTableUI) getParent()).submit();
+        });
+
+
+
+
+
+
         this.recordingText = new Text(0, 20, "Recording...");
         this.getChildren().add(recordingText);
     }
@@ -28,4 +46,11 @@ public class RecordingUI extends Group {
     public void notifyFinished() {
         this.recordingText.setText("Recording Finished");
     }
-}
+
+    public void notifyRecording() {
+        this.recordingText.setText("Recording in session");
+    }
+
+    }
+
+
