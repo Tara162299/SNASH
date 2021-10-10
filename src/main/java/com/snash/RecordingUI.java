@@ -10,31 +10,38 @@ public class RecordingUI extends Group {
 
     private Text recordingText;
 
+    private Button returnButton;
+    private Button restartButton;
+    private Button stopButton;
+    private Button startButton;
+
     public RecordingUI() {
 
-        Button stopRecordingButton = new Button("Stop");
-        stopRecordingButton.setOnAction(actionEvent -> {
-            //((MTableUI) getParent()).submit();
-            //this.
+        this.stopButton = new Button("Stop");
+        this.getChildren().add(stopButton);
+        this.stopButton.setOnAction(actionEvent -> {
+
         });
 
-        Button returnButton = new Button("Return");
-        returnButton.setOnAction(actionEvent -> {
-            //((MTableUI) getParent()).submit();
+        this.returnButton = new Button("Return");
+        this.getChildren().add(returnButton);
+        this.returnButton.setOnAction(actionEvent -> {
+
         });
 
-        Button restartButton = new Button("restart Recording");
-        returnButton.setOnAction(actionEvent -> {
-            //((MTableUI) getParent()).submit();
+        this.restartButton = new Button("Restart");
+        this.getChildren().add(restartButton);
+        this.restartButton.setOnAction(actionEvent -> {
+
         });
 
+        this.startButton = new Button("Start");
+        this.getChildren().add(startButton);
+        this.startButton.setOnAction(actionEvent -> {
 
-
-
-
-
+        });
         this.recordingText = new Text(0, 20, "Recording...");
-        this.getChildren().add(recordingText);
+//        this.getChildren().add(recordingText);
     }
 
     public AudioRecording startRecording() {
