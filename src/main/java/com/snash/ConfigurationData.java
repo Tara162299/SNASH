@@ -1,5 +1,6 @@
 package com.snash;
 
+import javafx.scene.chart.PieChart;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -11,7 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.*;
 
 public class ConfigurationData {
     // TODO add upload configuration data
@@ -22,7 +23,7 @@ public class ConfigurationData {
         Timezone
     }
 
-    public class dataField {
+    public class DataField {
         // name within actual metadata attached to a file
         private String name;
 
@@ -35,7 +36,7 @@ public class ConfigurationData {
 
         private SpecialValue specialValue;
 
-        public dataField(String name, String alias, String defaultValue, String fixedValue, SpecialValue specialValue) {
+        public DataField(String name, String alias, String defaultValue, String fixedValue, SpecialValue specialValue) {
             this.name = name;
             this.alias = alias;
             this.defaultValue = defaultValue;
@@ -64,13 +65,13 @@ public class ConfigurationData {
         }
     }
 
-    private HashMap<String, dataField> metadataFields;
-    private HashMap<Integer, dataField> fileNameFields;
+    private Map<String, DataField> metadataFields;
+    private Map<Integer, DataField> fileNameFields;
+
 
     // creates configuration data from a config file
     public ConfigurationData(File configFile) throws ParserConfigurationException, IOException, SAXException {
         // TODO handle incorrectly formatted xml files
-
         metadataFields = new HashMap<>();
         fileNameFields = new HashMap<>();
 
@@ -109,7 +110,7 @@ public class ConfigurationData {
                     specialValue = stringToSpecialValue(tags.item(0).getTextContent());
                 }
 
-                dataField newData = new dataField(name, alias, fixedValue, defaultValue, specialValue);
+                DataField newData = new DataField(name, alias, fixedValue, defaultValue, specialValue);
                 if (name.startsWith("FileName")) {
                     int num = Integer.parseInt(name.replaceAll("\\D+",""));
                     fileNameFields.put(num, newData);
@@ -122,7 +123,11 @@ public class ConfigurationData {
 
     }
 
-    public dataField getMetadataField(String name) {
+    public Collection<DataField> getMetadataFields(){
+        return metadataFields.values();
+    }
+
+    public DataField getMetadataField(String name) {
         return metadataFields.get(name);
     }
 
@@ -130,7 +135,7 @@ public class ConfigurationData {
         return metadataFields.containsKey(name);
     }
 
-    public dataField getFileNameField(int index) {
+    public DataField getFileNameField(int index) {
         return fileNameFields.get(index);
     }
 

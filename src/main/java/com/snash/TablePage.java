@@ -13,35 +13,47 @@ import javax.swing.filechooser.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.snash.Metadata.MetadataField;
+
 public class TablePage extends Group {
 
-    // How many "generic fields" should be on the page- i.e. not hardcoded by the devs.
-    public static final int numFields = 9;
+    public class FieldDisplay{
+        private final MetadataField metadataField;
+        private final Text aliasText;
+        private final TextField valueField;
+
+        public FieldDisplay(Metadata.MetadataField metadataField){
+            this.metadataField = metadataField;
+            aliasText = new Text(metadataField.getAlias());
+            valueField = new TextField(metadataField.getValue());
+        }
+
+        public Text getAliasText(){
+            return aliasText;
+        }
+
+        public TextField getValueField(){
+            return valueField;
+        }
+
+        public void updateMetadataField(){
+            metadataField.setValue(valueField.getText());
+        }
+    }
+
     // How many hardcoded lines come before the field grid, i.e. buttons or filepath field.
     public static final int fieldGridOffset = 1;
 
-    // fieldNames should be made into Text objects once json files are readable.
-    private final ArrayList<TextField> fieldNames = new ArrayList<>();
-    private final ArrayList<TextField> fieldValues = new ArrayList<>();
 
-    public TablePage(int pageNumber){
+    private final List<FieldDisplay> displays = new ArrayList<>();
+
+    public TablePage(int pageNumber, List<MetadataField> fields){
 
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
 
-        Button chooseConfigButton = new Button("Choose Configuration File");
-        chooseConfigButton.setOnAction((event) -> {
-            JFileChooser chooser = new JFileChooser();
-            FileFilter xmlFilter = new FileNameExtensionFilter("XML file", "xml");
-            chooser.setFileFilter(xmlFilter);
-            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            chooser.showOpenDialog(null);
-            if(chooser.getSelectedFile() != null){
-                ((MTableUI) getParent()).createMetadata(chooser.getSelectedFile());
-            }
-        });
 
         Button choosePathButton = new Button("Choose Save Location");
         choosePathButton.setOnAction((event) -> {
@@ -53,14 +65,13 @@ public class TablePage extends Group {
             }
         });
 
-        grid.add(chooseConfigButton, 0, 0);
         grid.add(choosePathButton, 1, 0);
 
-        for(int i = 0; i < numFields; i++){
-            fieldNames.add(new TextField());
-            fieldValues.add(new TextField());
-            grid.add(fieldNames.get(i), 0, i + fieldGridOffset);
-            grid.add(fieldValues.get(i), 1, i + fieldGridOffset);
+        for(int i = 0; i < fields.size(); i++){
+            FieldDisplay newDisplay = new FieldDisplay(fields.get(i));
+            displays.add(newDisplay);
+            grid.add(newDisplay.aliasText, 0, i + fieldGridOffset);
+            grid.add(newDisplay.valueField, 1, i + fieldGridOffset);
         }
 
         Button recordButton = new Button("Start Recording");
@@ -75,33 +86,17 @@ public class TablePage extends Group {
         nextButton.setOnAction((event) ->
                 ((MTableUI) getParent()).moveToPage(pageNumber + 1));
 
-        grid.add(previousButton, 0, numFields + fieldGridOffset);
-        grid.add(nextButton, 1, numFields + fieldGridOffset);
-        grid.add(recordButton, 0, numFields + fieldGridOffset + 1);
-        grid.add(new Text("Page " + (pageNumber + 1)), 1, numFields + fieldGridOffset + 1);
+        grid.add(previousButton, 0, displays.size() + fieldGridOffset);
+        grid.add(nextButton, 1, displays.size() + fieldGridOffset);
+        grid.add(recordButton, 0, displays.size() + fieldGridOffset + 1);
+        grid.add(new Text("Page " + (pageNumber + 1)), 1, displays.size() + fieldGridOffset + 1);
 
         getChildren().add(grid);
     }
 
-    public List<String> getFieldNames(){
-        List<String> output = new ArrayList<>();
-        for (TextField name : fieldNames) {
-            if (!name.getText().isEmpty()) {
-                output.add(name.getText());
-            }
+    public void updateMetadataValues() {
+        for (FieldDisplay display : displays) {
+            display.updateMetadataField();
         }
-        return output;
     }
-
-    public List<String> getFieldValues(){
-        List<String> output = new ArrayList<>();
-        for (TextField value : fieldValues) {
-            if (!value.getText().isEmpty()){
-                output.add(value.getText());
-            }
-        }
-        return output;
-    }
-
-
 }

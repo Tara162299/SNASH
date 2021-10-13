@@ -23,8 +23,7 @@ public class RecordingUI extends Group {
     }
 
     public AudioRecording startRecording() {
-        this.audioRecording = new AudioRecording(this);
-        audioRecording.setMetadata(metadata);
+        this.audioRecording = new AudioRecording(this, metadata);
         audioRecording.run();
         return audioRecording;
     }

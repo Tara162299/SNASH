@@ -1,21 +1,82 @@
 package com.snash;
 
+import java.util.ArrayList;
+import java.util.List;
+import com.snash.ConfigurationData.DataField;
+
 public class Metadata {
 
-    // The true names of each metadata field- i.e. "artist", "album", "genre", etc.
-    private String[] trueNames;
-    // The aliased (displayed) name of each field- i.e. "callsign", "event", etc.
-    private String[] aliases;
-    // The value of each metadata field.
-    private String[] values = null;
-    // The location to save audio data to. A new folder will be created in this location.
+    public class MetadataField {
+        private final String name;
+        private final String alias;
+        private final boolean immutable;
+        private String value;
+
+        public MetadataField(DataField dataField) {
+            this.name = dataField.getName();
+            this.alias = dataField.getAlias();
+            if (dataField.hasFixedValue()) {
+                this.value = dataField.getFixedValue();
+                this.immutable = true;
+            } else {
+                this.value = dataField.getDefaultValue();
+                this.immutable = false;
+            }
+        }
+
+        public void setValue(String value){
+            if(!immutable){
+                this.value = value;
+            }
+        }
+
+        public String getName(){
+            return name;
+        }
+
+        public String getAlias(){
+            return alias;
+        }
+
+        public String getValue(){
+            return value;
+        }
+
+        public boolean isImmutable(){
+            return immutable;
+        }
+    }
+
+    private List<MetadataField> metadataFields;
     private String filePath = null;
 
-    public Metadata(String[] trueNames, String[] aliases){
-        assert trueNames.length == aliases.length;
-        this.trueNames = trueNames;
-        this.aliases = aliases;
-        this.values = new String[trueNames.length];
+    public Metadata(ConfigurationData configData){
+        metadataFields = new ArrayList<>();
+        for (DataField configField : configData.getMetadataFields()){
+            metadataFields.add(new MetadataField(configField));
+        }
+    }
+
+    public List<MetadataField> displayFields(){
+        List<MetadataField> outputList = getMetadataFields();
+        for (int i = 0; i < metadataFields.size(); i++) {
+            if(metadataFields.get(i).isImmutable()){
+                outputList.remove(i);
+            }
+        }
+        return outputList;
+    }
+
+    public int length(){
+        return metadataFields.size();
+    }
+
+    public MetadataField get(int i){
+        return metadataFields.get(i);
+    }
+
+    public List<MetadataField> getMetadataFields(){
+        return new ArrayList<>(metadataFields);
     }
 
     public void setFilePath(String filePath){
@@ -24,33 +85,5 @@ public class Metadata {
 
     public String getFilePath(){
         return filePath;
-    }
-
-    // Sets the value of the field with the given true name. Throws an error if the true name is not present.
-    public void setValueOfTrueName(String value, String trueName){
-        values[positionOfTrueName(trueName)] = value;
-    }
-
-    // Sets the value of the field with the given alias. Throws an error if the alias is not present.
-    public void setValueOfAlias(String value, String alias){
-        values[positionOfAlias(alias)] = value;
-    }
-
-    private int positionOfTrueName(String trueName){
-        for (int i = 0; i < trueNames.length; i++){
-            if (trueNames[i].equals(trueName)){
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private int positionOfAlias(String alias){
-        for (int i = 0; i < aliases.length; i++){
-            if (aliases[i].equals(alias)){
-                return i;
-            }
-        }
-        return -1;
     }
 }

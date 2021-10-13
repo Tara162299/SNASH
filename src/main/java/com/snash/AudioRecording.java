@@ -27,11 +27,8 @@ public class AudioRecording implements Runnable{
     // the UI that created this
     RecordingUI recordingUI;
 
-    public AudioRecording(RecordingUI recordingUI) {
+    public AudioRecording(RecordingUI recordingUI, Metadata metadata) {
         this.recordingUI = recordingUI;
-    }
-
-    public void setMetadata(Metadata metadata){
         this.metadata = metadata;
     }
 
@@ -48,8 +45,7 @@ public class AudioRecording implements Runnable{
 
     void start() {
         try {
-            //wavFile = new File(metadata.getFilePath());
-            wavFile = new File("C:/Users/Daniel/Desktop/TestRecording");
+            wavFile = new File(metadata.getFilePath() + "tempfilename.wav");
             AudioFormat format = getAudioFormat();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
