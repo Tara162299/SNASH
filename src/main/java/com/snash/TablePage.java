@@ -49,7 +49,6 @@ public class TablePage extends Group {
         Scene scene = new Scene(recordingUI);
 
         recordButton.setOnAction(actionEvent -> {
-            //((MTableUI) getParent()).;
             ((MTableUI) getParent()).toRecordingUI();
         });
 
@@ -58,6 +57,7 @@ public class TablePage extends Group {
                 ((MTableUI) getParent()).moveToPage(pageNumber - 1));
 
         Button nextButton = new Button("Next");
+
         nextButton.setOnAction((event) ->
                 ((MTableUI) getParent()).moveToPage(pageNumber + 1));
 

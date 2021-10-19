@@ -4,8 +4,11 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.control.TextArea;
+
+import java.awt.*;
 
 public class RecordingUI extends Group {
 
@@ -14,15 +17,15 @@ public class RecordingUI extends Group {
     private Text recordingText;
     private Text stopText;
 
-    private Button returnButton;
+    private Button doneButton;
     private Button restartButton;
     private Button stopButton;
     private Button startButton;
+    private Button pauseButton;
     private GridPane grid;
 
-
-
     public RecordingUI() {
+
 
         grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -30,6 +33,7 @@ public class RecordingUI extends Group {
         grid.setVgap(10);
 
         stopButton = new Button("Stop");
+        stopButton.setStyle("-fx-background-color: #940505; ");
         stopButton.setOnAction(actionEvent -> {
             RecordingUI recordingUI = new RecordingUI();
             this.getScene().setRoot(recordingUI);
@@ -37,8 +41,13 @@ public class RecordingUI extends Group {
 
         });
 
-        returnButton = new Button("Return");
-        returnButton.setOnAction(actionEvent -> {
+        doneButton = new Button("Done!");
+        doneButton.setOnAction(actionEvent -> {
+
+        });
+
+        pauseButton = new Button("Pause");
+        pauseButton.setOnAction(actionEvent -> {
 
         });
 
@@ -48,6 +57,7 @@ public class RecordingUI extends Group {
         });
 
         startButton = new Button("Start");
+        startButton.setStyle("-fx-background-color: #02730d; ");
         startButton.setOnAction(actionEvent -> {
             RecordingUI recordingUI = new RecordingUI();
             this.getScene().setRoot(recordingUI);
@@ -55,9 +65,10 @@ public class RecordingUI extends Group {
         });
 
         grid.add(startButton, 0, 1);
-        grid.add(stopButton, 1, 1);
-        grid.add(returnButton, 3, 1);
-        grid.add(restartButton, 4, 1);
+        grid.add(pauseButton, 1, 1);
+        grid.add(restartButton, 3, 1);
+        grid.add(stopButton, 4, 1);
+        grid.add(doneButton, 5, 1);
         this.getChildren().add(grid);
 
 
@@ -71,18 +82,15 @@ public class RecordingUI extends Group {
         return audioRecording;
     }
 
-    public AudioRecording stopRecording() {
+    public void stopRecording() {
+
         this.audioRecording = new AudioRecording(this);
+
         audioRecording.stop();
         this.stopText = new Text(10, 20, "Record stopped");
         this.getChildren().add(stopText);
-        return audioRecording;
-    }
-
-    public void notifyRecording() {
-        this.recordingText.setText("Recording in session");
-    }
 
     }
+}
 
 

@@ -3,16 +3,18 @@ package com.snash;
 import javax.sound.sampled.*;
 import java.io.*;
 
-        //Define an audio format of the sound source to be captured, using the class AudioFormat.
-        //Create a DataLine.Info object to hold information of a data line.
-        //Obtain a TargetDataLine object which represents an input data line from which audio data can be captured, using the method getLineInfo(DataLine.Info) of the AudioSystem class.
-        //Open and start the target data line to begin capturing audio data.
-        //Create an AudioInputStream object to read data from the target data line.
+//Define an audio format of the sound source to be captured, using the class AudioFormat.
+//Create a DataLine.Info object to hold information of a data line.
+//Obtain a TargetDataLine object which represents an input data line from which audio data can be captured, using the method getLineInfo(DataLine.Info) of the AudioSystem class.
+//Open and start the target data line to begin capturing audio data.
+//Create an AudioInputStream object to read data from the target data line.
 
 
-public class AudioRecording implements Runnable{
+public class AudioRecording implements Runnable {
     // record duration, in milliseconds
-    static final long RECORD_TIME = 4000;  // 4 seconds
+    static final long RECORD_TIME = 10000;  // 4 seconds
+
+    boolean isRecording = true;
 
     // path of the wav file
     File wavFile = new File("C:\\Users\\BuiMi\\Desktop\\Test.wav");
@@ -41,8 +43,8 @@ public class AudioRecording implements Runnable{
 
     // Captures the sound and record into a WAV file
 
-    void start() {
-
+    void startCapture() {
+        isRecording = true;
 
         try {
             AudioFormat format = getAudioFormat();
@@ -54,17 +56,21 @@ public class AudioRecording implements Runnable{
                 System.exit(0);
             }
             line = (TargetDataLine) AudioSystem.getLine(info);
+
             line.open(format);
+
             line.start();  // start capturing
 
             System.out.println("Start capturing...");
 
             AudioInputStream ais = new AudioInputStream(line);
 
+
             System.out.println("Start recording...");
 
             // start recording
             AudioSystem.write(ais, fileType, wavFile);
+
 
         } catch (LineUnavailableException | IOException ex) {
             ex.printStackTrace();
@@ -81,26 +87,29 @@ public class AudioRecording implements Runnable{
     }
 
     void stop() {
-        line.stop();
-        line.flush();
-        line.close();
-        System.out.println("Recording stopped");
+        if (isRecording == true) {
+            isRecording = false;
+        } else {
+            System.out.println("There is no record to be stopped");
+        }
     }
 
     @Override
     public void run() {
         // creates a new thread that waits for a specified
         // of time before stopping
+
         Thread stopper = new Thread(() -> {
             try {
                 Thread.sleep(RECORD_TIME);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
+
             this.finish();
         });
-
         stopper.start();
-        this.start();
+        this.startCapture();
+
     }
 }
