@@ -13,13 +13,19 @@ public class Metadata {
         private String value;
 
         public MetadataField(DataField dataField) {
-            this.name = dataField.getName();
-            this.alias = dataField.getAlias();
+            name = dataField.name();
+
+            if (dataField.alias() != null){
+                alias = dataField.alias();
+            } else {
+                alias = name;
+            }
+
             if (dataField.hasFixedValue()) {
-                this.value = dataField.getFixedValue();
+                this.value = dataField.fixedValue();
                 this.immutable = true;
             } else {
-                this.value = dataField.getDefaultValue();
+                this.value = dataField.defaultValue();
                 this.immutable = false;
             }
         }
@@ -47,7 +53,7 @@ public class Metadata {
         }
     }
 
-    private List<MetadataField> metadataFields;
+    private final List<MetadataField> metadataFields;
     private String filePath = null;
 
     public Metadata(ConfigurationData configData){

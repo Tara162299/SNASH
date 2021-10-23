@@ -23,42 +23,17 @@ public class ConfigurationData {
         Timezone
     }
 
-    public class DataField {
-        // name within actual metadata attached to a file
-        private String name;
-
-        // user displayed name
-        private String alias;
-
-        private String defaultValue;
-
-        private String fixedValue;
-
-        private SpecialValue specialValue;
-
-        public DataField(String name, String alias, String defaultValue, String fixedValue, SpecialValue specialValue) {
-            this.name = name;
-            this.alias = alias;
-            this.defaultValue = defaultValue;
-            this.fixedValue = fixedValue;
-            this.specialValue = specialValue;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getAlias() {
-            return alias;
-        }
-
-        public String getDefaultValue() {
-            return defaultValue;
-        }
-
-        public String getFixedValue() {
-            return fixedValue;
-        }
+    /**
+     * @param name  The name of the tag attached to the file, i.e. "artist"
+     * @param alias The alias to be displayed to the user, i.e. "callsign"
+     * @param defaultValue  The default value, or null if there is none.
+     * @param fixedValue    The predetermined value, or null if it should be user-defined.
+     * @param specialValue  The type of special value, or null if it is not one of them.
+     * @return An immutable record holding the configuration data for this field.
+     */
+    public record DataField(String name, String alias,
+                            String defaultValue, String fixedValue,
+                            SpecialValue specialValue) {
 
         public boolean hasFixedValue() {
             return fixedValue != null;
@@ -110,8 +85,9 @@ public class ConfigurationData {
                     specialValue = stringToSpecialValue(tags.item(0).getTextContent());
                 }
 
-                DataField newData = new DataField(name, alias, fixedValue, defaultValue, specialValue);
                 Objects.requireNonNull(name, "Every metadata tag must have a true name.");
+                DataField newData = new DataField(name, alias, fixedValue, defaultValue, specialValue);
+
                 if (name.startsWith("FileName")) {
                     int num = Integer.parseInt(name.replaceAll("\\D+",""));
                     fileNameFields.put(num, newData);
