@@ -16,7 +16,7 @@ public class AudioRecording extends Thread {
 
     // flag to indicate that the recorder is requested to be stopped
     boolean stopRequest = false;
-    boolean isRecording = true;
+    boolean isRecording = false;
 
     // path of the wav file
     File wavFile = new File("C:\\Users\\BuiMi\\Desktop\\Test.wav");
@@ -47,6 +47,7 @@ public class AudioRecording extends Thread {
 
     public void requestStop() {
         stopRequest = true;
+        this.interrupt();
     }
 
     private void startCapture() {
@@ -76,10 +77,21 @@ public class AudioRecording extends Thread {
 
             // start recording
             AudioSystem.write(ais, fileType, wavFile);
+            isRecording = true;
 
 
         } catch (LineUnavailableException | IOException ex) {
             ex.printStackTrace();
+        }
+
+        synchronized (this) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                if (stopRequest) {
+                    stopRecording();
+                }
+            }
         }
     }
 
@@ -95,6 +107,7 @@ public class AudioRecording extends Thread {
     private void stopRecording() {
         if (isRecording == true) {
             isRecording = false;
+            this.finish();
         } else {
             System.out.println("There is no record to be stopped");
         }
@@ -112,7 +125,7 @@ public class AudioRecording extends Thread {
                 ex.printStackTrace();
             }
 
-            this.finish();
+            this.requestStop();
         });
         stopper.start();
         this.startCapture();
