@@ -13,6 +13,7 @@ import java.awt.*;
 public class RecordingUI extends Group {
 
     private AudioRecording audioRecording;
+    private Metadata metadata;
 
     private Text recordingText;
     private Text stopText;
@@ -24,8 +25,9 @@ public class RecordingUI extends Group {
     private Button pauseButton;
     private GridPane grid;
 
-    public RecordingUI() {
+    public RecordingUI(Metadata metadata) {
 
+        this.metadata = metadata;
 
         grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -35,7 +37,7 @@ public class RecordingUI extends Group {
         stopButton = new Button("Stop");
         stopButton.setStyle("-fx-background-color: #940505; ");
         stopButton.setOnAction(actionEvent -> {
-            RecordingUI recordingUI = new RecordingUI();
+            RecordingUI recordingUI = new RecordingUI(metadata);
             this.getScene().setRoot(recordingUI);
             recordingUI.stopRecording();
 
@@ -59,7 +61,7 @@ public class RecordingUI extends Group {
         startButton = new Button("Start");
         startButton.setStyle("-fx-background-color: #02730d; ");
         startButton.setOnAction(actionEvent -> {
-            RecordingUI recordingUI = new RecordingUI();
+            RecordingUI recordingUI = new RecordingUI(metadata);
             this.getScene().setRoot(recordingUI);
             recordingUI.startRecording();
         });
