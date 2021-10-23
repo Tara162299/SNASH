@@ -45,6 +45,7 @@ public class AudioRecording implements Runnable{
 
     void start() {
         try {
+            //TODO: Dynamic name generation
             wavFile = new File(metadata.getFilePath() + "tempfilename.wav");
             AudioFormat format = getAudioFormat();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);

@@ -1,6 +1,5 @@
 package com.snash;
 
-import javafx.scene.chart.PieChart;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -29,7 +28,6 @@ public class ConfigurationData {
      * @param defaultValue  The default value, or null if there is none.
      * @param fixedValue    The predetermined value, or null if it should be user-defined.
      * @param specialValue  The type of special value, or null if it is not one of them.
-     * @return An immutable record holding the configuration data for this field.
      */
     public record DataField(String name, String alias,
                             String defaultValue, String fixedValue,
@@ -40,8 +38,8 @@ public class ConfigurationData {
         }
     }
 
-    private Map<String, DataField> metadataFields;
-    private Map<Integer, DataField> fileNameFields;
+    private final Map<String, DataField> metadataFields;
+    private final Map<Integer, DataField> fileNameFields;
 
 
     // creates configuration data from a config file

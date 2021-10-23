@@ -8,8 +8,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +48,7 @@ public class TablePage extends Group {
     public TablePage(int pageNumber, List<MetadataField> fields){
 
         GridPane grid = new GridPane();
+
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(10);

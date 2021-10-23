@@ -1,20 +1,15 @@
 package com.snash;
 
-import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
 public class RecordingUI extends Group {
 
     private AudioRecording audioRecording;
 
-    private Text recordingText;
+    private final Text recordingText;
 
-    private Metadata metadata;
+    private final Metadata metadata;
 
     public RecordingUI(Metadata metadata) {
         this.metadata = metadata;
