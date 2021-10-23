@@ -32,11 +32,11 @@ public class MTableUI extends Group {
             chooser.setFileFilter(xmlFilter);
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             chooser.showOpenDialog(null);
-            if(chooser.getSelectedFile() != null){
-                metadata = createMetadata(chooser.getSelectedFile());
+            metadata = createMetadata(chooser.getSelectedFile());
+            if(metadata != null){
+                moveToPage(0);
+                this.getChildren().remove(chooseConfigButton);
             }
-            moveToPage(0);
-            this.getChildren().remove(chooseConfigButton);
         });
         this.getChildren().add(chooseConfigButton);
     }
@@ -101,6 +101,7 @@ public class MTableUI extends Group {
             ConfigurationData config = new ConfigurationData(xml);
             return new Metadata(config);
         } catch (Exception e){
+            System.out.println(e.getMessage());
             return null;
         }
     }

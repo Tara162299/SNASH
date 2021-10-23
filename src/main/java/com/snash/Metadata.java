@@ -58,12 +58,13 @@ public class Metadata {
     }
 
     public List<MetadataField> displayFields(){
-        List<MetadataField> outputList = getMetadataFields();
-        for (int i = 0; i < metadataFields.size(); i++) {
-            if(metadataFields.get(i).isImmutable()){
-                outputList.remove(i);
+        List<MetadataField> outputList = new ArrayList<>();
+        for (MetadataField field : metadataFields) {
+            if (!field.isImmutable()){
+                outputList.add(field);
             }
         }
+
         return outputList;
     }
 

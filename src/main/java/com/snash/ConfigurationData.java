@@ -111,6 +111,7 @@ public class ConfigurationData {
                 }
 
                 DataField newData = new DataField(name, alias, fixedValue, defaultValue, specialValue);
+                Objects.requireNonNull(name, "Every metadata tag must have a true name.");
                 if (name.startsWith("FileName")) {
                     int num = Integer.parseInt(name.replaceAll("\\D+",""));
                     fileNameFields.put(num, newData);
