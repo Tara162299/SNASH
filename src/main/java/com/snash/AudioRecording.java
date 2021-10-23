@@ -14,6 +14,8 @@ public class AudioRecording extends Thread {
     // record duration, in milliseconds
     static final long RECORD_TIME = 10000;  // 4 seconds
 
+    // flag to indicate that the recorder is requested to be stopped
+    boolean stopRequest = false;
     boolean isRecording = true;
 
     // path of the wav file
@@ -43,7 +45,11 @@ public class AudioRecording extends Thread {
 
     // Captures the sound and record into a WAV file
 
-    void startCapture() {
+    public void requestStop() {
+        stopRequest = true;
+    }
+
+    private void startCapture() {
         isRecording = true;
 
         try {
@@ -79,14 +85,14 @@ public class AudioRecording extends Thread {
 
     // Closes the target data line to finish capturing and recording
 
-    void finish() {
+    private void finish() {
         line.stop();
         line.flush();
         line.close();
         System.out.println("Finished");
     }
 
-    void stopRecording() {
+    private void stopRecording() {
         if (isRecording == true) {
             isRecording = false;
         } else {
