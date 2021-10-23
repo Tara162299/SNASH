@@ -78,7 +78,7 @@ public class RecordingUI extends Group {
 
     public AudioRecording startRecording() {
         this.audioRecording = new AudioRecording(this);
-        audioRecording.run();
+        audioRecording.start();
         return audioRecording;
     }
 
@@ -86,7 +86,7 @@ public class RecordingUI extends Group {
 
         this.audioRecording = new AudioRecording(this);
 
-        audioRecording.stop();
+        audioRecording.stopRecording();
         this.stopText = new Text(10, 20, "Record stopped");
         this.getChildren().add(stopText);
 

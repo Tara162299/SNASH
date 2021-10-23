@@ -10,7 +10,7 @@ import java.io.*;
 //Create an AudioInputStream object to read data from the target data line.
 
 
-public class AudioRecording implements Runnable {
+public class AudioRecording extends Thread {
     // record duration, in milliseconds
     static final long RECORD_TIME = 10000;  // 4 seconds
 
@@ -86,7 +86,7 @@ public class AudioRecording implements Runnable {
         System.out.println("Finished");
     }
 
-    void stop() {
+    void stopRecording() {
         if (isRecording == true) {
             isRecording = false;
         } else {
