@@ -1,15 +1,10 @@
 package com.snash;
 
 import javafx.application.Application;
-import javafx.scene.Group;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.IOException;
 
 public class Control extends Application {
 
@@ -18,11 +13,12 @@ public class Control extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws ParserConfigurationException, IOException, SAXException {
-        ConfigurationData config = new ConfigurationData(new File("test_config.xml"));
+    public void start(Stage stage) {
         stage.setTitle("Enter Metadata");
-        stage.setScene(new Scene(new MTableUI()));
+        MTableUI mTableUI = new MTableUI();
+        BorderPane.setAlignment(mTableUI, Pos.CENTER);
+        stage.setScene(new Scene(new BorderPane(mTableUI)));
+        stage.setMaximized(true);
         stage.show();
-        // System.out.println(tableScene.getFilePath());
     }
 }
