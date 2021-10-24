@@ -41,7 +41,7 @@ public class RecordingUI extends Group {
 
         doneButton = new Button("Done!");
         doneButton.setOnAction(actionEvent -> {
-
+            // should take us to uploading 
         });
 
         pauseButton = new Button("Pause");
@@ -87,5 +87,3 @@ public class RecordingUI extends Group {
 
     }
 }
-
-
