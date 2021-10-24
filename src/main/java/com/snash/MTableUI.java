@@ -75,7 +75,6 @@ public class MTableUI extends Group {
 
         RecordingUI recordingUI = new RecordingUI(metadata);
         this.getScene().setRoot(recordingUI);
-        recordingUI.startRecording();
     }
 
     void setPath(String path){
