@@ -1,10 +1,11 @@
 package com.snash;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import com.snash.ConfigurationData.DataField;
 
-public class Metadata {
+public class Metadata implements Iterable<Metadata.MetadataField> {
 
     public class MetadataField {
         private final String name;
@@ -51,6 +52,11 @@ public class Metadata {
         public boolean isImmutable(){
             return immutable;
         }
+
+        @Override
+        public String toString(){
+            return "n: " + name + " a: " + alias + " v: " + value;
+        }
     }
 
     private final List<MetadataField> metadataFields;
@@ -92,5 +98,31 @@ public class Metadata {
 
     public String getFilePath(){
         return filePath;
+    }
+
+    @Override
+    public Iterator<MetadataField> iterator() {
+        return new MetadataIterator<>();
+    }
+
+    public class MetadataIterator<T> implements Iterator<T>{
+        int currentPos = 0;
+
+        @Override
+        public boolean hasNext() {
+            return Metadata.this.length() > currentPos;
+        }
+
+        @Override
+        public T next() {
+            T nextItem = (T) Metadata.this.get(currentPos);
+            currentPos++;
+            return nextItem;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     }
 }
