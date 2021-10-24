@@ -79,14 +79,14 @@ public class RecordingUI extends Group {
     }
 
     public AudioRecording startRecording() {
-        this.audioRecording = new AudioRecording(this);
+        this.audioRecording = new AudioRecording(this, metadata);
         audioRecording.start();
         return audioRecording;
     }
 
     public void stopRecording() {
 
-        this.audioRecording = new AudioRecording(this);
+        this.audioRecording = new AudioRecording(this, metadata);
 
         audioRecording.requestStop();
         this.stopText = new Text(10, 20, "Record stopped");

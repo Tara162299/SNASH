@@ -30,8 +30,13 @@ public class AudioRecording extends Thread {
     // the UI that created this
     RecordingUI recordingUI;
 
-    public AudioRecording(RecordingUI recordingUI) {
+    // the metadata to be added to the wav file
+    private final Metadata metadata;
+
+    public AudioRecording(RecordingUI recordingUI, Metadata metadata) {
         this.recordingUI = recordingUI;
+        this.metadata = metadata;
+        wavFile = new File(metadata.getFilePath() + "\\Test.wav");
     }
 
     // Defines an audio format
