@@ -15,20 +15,20 @@ public class AudioRecording extends Thread {
     static final long RECORD_TIME = 10000;  // 4 seconds
 
     // flag to indicate that the recorder is requested to be stopped
-    boolean stopRequest = false;
-    boolean isRecording = false;
+    private boolean stopRequest = false;
+    private boolean isRecording = false;
 
     // path of the wav file
-    File wavFile = new File("C:\\Users\\BuiMi\\Desktop\\Test.wav");
+    private final File wavFile;
 
     // format of audio file
-    AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE;
+    private final AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE;
 
     // the line from which audio data is captured
-    TargetDataLine line;
+    private TargetDataLine line;
 
     // the UI that created this
-    RecordingUI recordingUI;
+    private final RecordingUI recordingUI;
 
     // the metadata to be added to the wav file
     private final Metadata metadata;
@@ -40,7 +40,7 @@ public class AudioRecording extends Thread {
     }
 
     // Defines an audio format
-    AudioFormat getAudioFormat() {
+    private AudioFormat audioFormat() {
         float sampleRate = 16000;
         int sampleSizeInBits = 8;
         int channels = 2;
@@ -59,7 +59,7 @@ public class AudioRecording extends Thread {
         isRecording = true;
 
         try {
-            AudioFormat format = getAudioFormat();
+            AudioFormat format = audioFormat();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
             // checks if system supports the data line
@@ -110,7 +110,7 @@ public class AudioRecording extends Thread {
     }
 
     private void stopRecording() {
-        if (isRecording == true) {
+        if (isRecording) {
             isRecording = false;
             this.finish();
         } else {

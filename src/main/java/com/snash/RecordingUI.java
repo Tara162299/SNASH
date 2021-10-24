@@ -4,16 +4,12 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.scene.control.TextArea;
-
-import java.awt.*;
 
 public class RecordingUI extends Group {
 
     private AudioRecording audioRecording;
-    private Metadata metadata;
+    private final Metadata metadata;
 
     private Text recordingText;
     private Text stopText;
