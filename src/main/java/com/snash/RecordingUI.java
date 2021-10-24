@@ -33,10 +33,7 @@ public class RecordingUI extends Group {
         stopButton = new Button("Stop");
         stopButton.setStyle("-fx-background-color: #940505; ");
         stopButton.setOnAction(actionEvent -> {
-            RecordingUI recordingUI = new RecordingUI(metadata);
-            this.getScene().setRoot(recordingUI);
-            recordingUI.stopRecording();
-
+            this.stopRecording();
         });
 
         doneButton = new Button("Done!");
