@@ -43,7 +43,7 @@ public class AudioRecording extends Thread {
     private AudioFormat audioFormat() {
         float sampleRate = 16000;
         int sampleSizeInBits = 8;
-        int channels = 2;
+        int channels = 1;
         return new AudioFormat(sampleRate, sampleSizeInBits,
                 channels, true, true);
     }
@@ -75,28 +75,23 @@ public class AudioRecording extends Thread {
 
             System.out.println("Start capturing...");
 
-            AudioInputStream ais = new AudioInputStream(line);
-
-
-            System.out.println("Start recording...");
-
-            // start recording
-            AudioSystem.write(ais, fileType, wavFile);
             isRecording = true;
 
+            // TODO: consider buffer size
+            byte[] buffer = new byte[line.getBufferSize()];
+            while (!this.stopRequest) {
+                line.read(buffer, 0, buffer.length);
+                // TODO: complete writing, this is attempted code that needs WritableInputStream custom object (created
+                //       in my local but not on origin)
+                // WritableInputStream inputStream = new WritableInputStream(buffer);
+                // AudioInputStream ais = new AudioInputStream(inputStream, format, inputStream.available());
+                // AudioSystem.write(ais, fileType, wavFile);
+            }
+
+            isRecording = false;
 
         } catch (LineUnavailableException | IOException ex) {
             ex.printStackTrace();
-        }
-
-        synchronized (this) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                if (stopRequest) {
-                    stopRecording();
-                }
-            }
         }
     }
 
@@ -132,7 +127,7 @@ public class AudioRecording extends Thread {
 
             this.requestStop();
         });
-        stopper.start();
+        // stopper.start();
         this.startCapture();
 
     }
