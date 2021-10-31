@@ -81,7 +81,6 @@ public class RecordingUI extends Group {
         audioRecording.requestStop();
         this.stopText = new Text(10, 20, "Record stopped");
         this.getChildren().add(stopText);
-
     }
 }
 

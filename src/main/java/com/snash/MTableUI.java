@@ -12,12 +12,13 @@ import java.util.List;
 
 public class MTableUI extends Group {
 
-    private final static int MAX_FIELDS_PER_PAGE = 9;
+    private final static int MAX_FIELDS_PER_PAGE = 10;
 
     private final ArrayList<TablePage> pages = new ArrayList<>();
     private Metadata metadata = null;
     private String path = null;
     private int fieldsDisplayed = 0;
+    private int lastPage;
 
     public MTableUI() {
         // super(root);
@@ -59,7 +60,8 @@ public class MTableUI extends Group {
 
         // If the page number is too high, add more pages.
         for (int i = pages.size(); i <= pageNumber; i++){
-            TablePage newPage = new TablePage(i, nextXFields(metadata, MAX_FIELDS_PER_PAGE));
+            boolean isLastPage = (pageNumber == lastPage);
+            TablePage newPage = new TablePage(i, nextXFields(metadata, MAX_FIELDS_PER_PAGE), isLastPage);
             pages.add(newPage);
         }
         showPage(pageNumber);
@@ -98,7 +100,9 @@ public class MTableUI extends Group {
     private Metadata createMetadata(File xml) {
         try {
             ConfigurationData config = new ConfigurationData(xml);
-            return new Metadata(config);
+            Metadata newMetadata = new Metadata(config);
+            lastPage = newMetadata.displayFields().size() / MAX_FIELDS_PER_PAGE;
+            return newMetadata;
         } catch (Exception e){
             System.out.println(e.getMessage());
             return null;
