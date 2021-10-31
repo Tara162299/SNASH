@@ -1,15 +1,17 @@
 <?xml version = "1.0"?>
 <config>
    <metadata>
-      <name>testName</name>
-      <alias>testAlias</alias>
-      <fixedValue>testFixed</fixedValue>
-      <defaultValue>testDefault</defaultValue>
-      <specialValue>time</specialValue>
+      <name>Artist</name>
+      <alias>Callsign</alias>
    </metadata>
 
    <metadata>
-      <name>semi_name</name>
-      <alias>semi_alias</alias>
+      <name>Filename0</name>
+      <SpecialValue>Date</SpecialValue>
+   </metadata>
+
+   <metadata>
+      <name>Album</name>
+      <FixedValue>Eclipse Project 2021</FixedValue>
    </metadata>
 </config>
