@@ -45,7 +45,7 @@ public class TablePage extends Group {
 
     private final List<FieldDisplay> displays = new ArrayList<>();
 
-    public TablePage(int pageNumber, List<MetadataField> fields){
+    public TablePage(int pageNumber, List<MetadataField> fields, boolean isLastPage){
 
         GridPane grid = new GridPane();
 
@@ -77,16 +77,20 @@ public class TablePage extends Group {
         recordButton.setOnAction(actionEvent ->
             ((MTableUI) getParent()).submit());
 
-        Button previousButton = new Button("Previous");
-        previousButton.setOnAction((event) ->
-                ((MTableUI) getParent()).moveToPage(pageNumber - 1));
+        if (pageNumber != 0) {
+            Button previousButton = new Button("Previous");
+            previousButton.setOnAction((event) ->
+                    ((MTableUI) getParent()).moveToPage(pageNumber - 1));
+            grid.add(previousButton, 0, displays.size() + fieldGridOffset);
+        }
 
-        Button nextButton = new Button("Next");
-        nextButton.setOnAction((event) ->
-                ((MTableUI) getParent()).moveToPage(pageNumber + 1));
+        if (!isLastPage) {
+            Button nextButton = new Button("Next");
+            nextButton.setOnAction((event) ->
+                    ((MTableUI) getParent()).moveToPage(pageNumber + 1));
+            grid.add(nextButton, 1, displays.size() + fieldGridOffset);
+        }
 
-        grid.add(previousButton, 0, displays.size() + fieldGridOffset);
-        grid.add(nextButton, 1, displays.size() + fieldGridOffset);
         grid.add(recordButton, 0, displays.size() + fieldGridOffset + 1);
         grid.add(new Text("Page " + (pageNumber + 1)), 1, displays.size() + fieldGridOffset + 1);
 
