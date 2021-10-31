@@ -52,7 +52,7 @@ public class AudioRecording extends Thread {
 
     public void requestStop() {
         stopRequest = true;
-        this.interrupt();
+        // this.interrupt();
     }
 
     private void startCapture() {
@@ -87,17 +87,16 @@ public class AudioRecording extends Thread {
                 // AudioInputStream ais = new AudioInputStream(inputStream, format, inputStream.available());
                 // AudioSystem.write(ais, fileType, wavFile);
             }
-
-            isRecording = false;
-
         } catch (LineUnavailableException | IOException ex) {
             ex.printStackTrace();
         }
+        finish();
     }
 
     // Closes the target data line to finish capturing and recording
 
     private void finish() {
+        isRecording = false;
         line.stop();
         line.flush();
         line.close();
