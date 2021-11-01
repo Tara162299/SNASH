@@ -36,9 +36,11 @@ public class RecordingUI extends Group {
             this.stopRecording();
         });
 
-        doneButton = new Button("Done!");
+        doneButton = new Button("Stop and Upload");
         doneButton.setOnAction(actionEvent -> {
-
+            // should take us to uploading
+            this.stopRecording();
+            Upload.upload(metadata.getPath());
         });
 
         pauseButton = new Button("Pause");
@@ -83,5 +85,3 @@ public class RecordingUI extends Group {
         this.getChildren().add(stopText);
     }
 }
-
-
