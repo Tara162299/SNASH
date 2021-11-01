@@ -1,5 +1,6 @@
 package com.snash;
 
+// All dependencies to be added at : https://developer.box.com/guides/tooling/sdks/java/ 
 import java.io.ByteArrayInputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -33,7 +34,7 @@ public class Upload {
     // DEVELOPER_TOKEN is something like "bHexasdYlNxBbU1zhEWfRqpHX3Uh2Qrk".
     // At the moment, we do not know Kristina's DEVELOPER_TOKEN hence we used one of our BOX accounts to verify results
     private static final int CHUNKED_UPLOAD_MINIMUM = 20000;
-    private String directoryName;
+    //private String directoryName;
 
     public static void upload(String directoryName) throws Exception {
           Path uploadFolderPath = Paths.get(directoryName);
