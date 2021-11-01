@@ -30,13 +30,13 @@ import java.util.regex.Pattern;
 public class Upload {
 
     private static final int MAX_DEPTH = 1;
-    private static final String DEVELOPER_TOKEN = "";
+    private static final String DEVELOPER_TOKEN = "dH53wBFqvlG2h8w7TBnLFspzv7UiX2yn";
     // DEVELOPER_TOKEN is something like "bHexasdYlNxBbU1zhEWfRqpHX3Uh2Qrk".
     // At the moment, we do not know Kristina's DEVELOPER_TOKEN hence we used one of our BOX accounts to verify results
     private static final int CHUNKED_UPLOAD_MINIMUM = 20000;
     //private String directoryName;
 
-    public static void upload(String directoryName) throws Exception {
+    public static void upload(String directoryName) {
           Path uploadFolderPath = Paths.get(directoryName);
           BoxAPIConnection client = new BoxAPIConnection(DEVELOPER_TOKEN);
           String parentFolderId = "0";
@@ -64,6 +64,9 @@ public class Upload {
                   boolean useChunkedUpload = (fileSize > CHUNKED_UPLOAD_MINIMUM) ? true : false;
                   uploadedFiles.add(uploadEachFile(client, createdFolderId, fileName, fileSize, fileBytes, useChunkedUpload));
               }
+          }
+          catch (IOException | InterruptedException | NoSuchAlgorithmException e) {
+            System.out.println("Folder path specified does not exist");
           }
           for (BoxFile.Info file: uploadedFiles) {
               System.out.println(file.getID());
