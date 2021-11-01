@@ -36,7 +36,7 @@ public class AudioRecording extends Thread {
     public AudioRecording(RecordingUI recordingUI, Metadata metadata) {
         this.recordingUI = recordingUI;
         this.metadata = metadata;
-        wavFile = new File(metadata.getFilePath() + "\\Test.wav");
+        wavFile = new File(metadata.getFilePath() + "\\Test_Sound.wav");
     }
 
     // Defines an audio format
@@ -50,13 +50,8 @@ public class AudioRecording extends Thread {
 
     // Captures the sound and record into a WAV file
 
-    public void requestStop() {
-        stopRequest = true;
-        // this.interrupt();
-    }
-
     private void startCapture() {
-        isRecording = true;
+       // isRecording = true;
 
         try {
             AudioFormat format = audioFormat();
@@ -67,33 +62,62 @@ public class AudioRecording extends Thread {
                 System.out.println("Line not supported");
                 System.exit(0);
             }
+
             line = (TargetDataLine) AudioSystem.getLine(info);
-
             line.open(format);
-
             line.start();  // start capturing
 
             System.out.println("Start capturing...");
 
             isRecording = true;
 
+            AudioInputStream ais = new AudioInputStream(line);
+
+            System.out.println("Start recording...");
+
+            // start recording
+            AudioSystem.write(ais, fileType, wavFile);
+
+            System.out.println("Start recording...");
+
             // TODO: consider buffer size
             byte[] buffer = new byte[line.getBufferSize()];
             while (!this.stopRequest) {
+
                 line.read(buffer, 0, buffer.length);
+
+
                 // TODO: complete writing, this is attempted code that needs WritableInputStream custom object (created
                 //       in my local but not on origin)
                 // WritableInputStream inputStream = new WritableInputStream(buffer);
                 // AudioInputStream ais = new AudioInputStream(inputStream, format, inputStream.available());
                 // AudioSystem.write(ais, fileType, wavFile);
             }
+
+
+
         } catch (LineUnavailableException | IOException ex) {
             ex.printStackTrace();
         }
-        finish();
+
+        //finish();
     }
 
     // Closes the target data line to finish capturing and recording
+
+    public void requestStop() {
+        stopRequest = true;
+        // this.interrupt();
+        this.stopRecording();
+    }
+
+    private void stopRecording() {
+        if (isRecording == true) {
+            this.finish();
+        } else {
+            System.out.println("There is no record to be stopped");
+        }
+    }
 
     private void finish() {
         isRecording = false;
@@ -103,30 +127,32 @@ public class AudioRecording extends Thread {
         System.out.println("Finished");
     }
 
-    private void stopRecording() {
-        if (isRecording) {
-            isRecording = false;
-            this.finish();
-        } else {
-            System.out.println("There is no record to be stopped");
-        }
-    }
-
     @Override
     public void run() {
         // creates a new thread that waits for a specified
         // of time before stopping
 
+        // final AudioRecording audio = new AudioRecording(recordingUI, metadata);
+
         Thread stopper = new Thread(() -> {
             try {
-                Thread.sleep(RECORD_TIME);
+
+                    Thread.sleep(Long.MAX_VALUE);
+
+                    if (stopRequest == true) {
+                        notify();
+                        Thread.interrupted();
+
+                    }
+
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
 
             this.requestStop();
         });
-        // stopper.start();
+
+        stopper.start();
         this.startCapture();
 
     }
