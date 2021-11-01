@@ -1,6 +1,6 @@
 package com.snash;
 
-// All dependencies to be added at : https://developer.box.com/guides/tooling/sdks/java/ 
+// All dependencies to be added at : https://developer.box.com/guides/tooling/sdks/java/
 import java.io.ByteArrayInputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
