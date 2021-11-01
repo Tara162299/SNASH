@@ -87,7 +87,7 @@ public class AudioRecording extends Thread {
                 // AudioInputStream ais = new AudioInputStream(inputStream, format, inputStream.available());
                 // AudioSystem.write(ais, fileType, wavFile);
             }
-        } catch (LineUnavailableException | IOException ex) {
+        } catch (LineUnavailableException ex) {
             ex.printStackTrace();
         }
         finish();
