@@ -71,13 +71,11 @@ public class AudioRecording extends Thread {
             byte[] buffer = new byte[line.getBufferSize()];
             while (!this.stopRequest) {
                 line.read(buffer, 0, buffer.length);
-                // TODO: complete writing, this is attempted code that needs WritableInputStream custom object (created
-                //       in my local but not on origin)
-                // WritableInputStream inputStream = new WritableInputStream(buffer);
-                // AudioInputStream ais = new AudioInputStream(inputStream, format, inputStream.available());
-                // AudioSystem.write(ais, fileType, wavFile);
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(buffer);
+                AudioInputStream audioInputStream = new AudioInputStream(inputStream, format, buffer.length);
+                AudioSystem.write(audioInputStream, fileType, wavFile);
             }
-        } catch (LineUnavailableException ex) {
+        } catch (LineUnavailableException | IOException ex) {
             ex.printStackTrace();
         }
     }
