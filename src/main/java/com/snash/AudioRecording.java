@@ -2,6 +2,8 @@ package com.snash;
 
 import javax.sound.sampled.*;
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class AudioRecording extends Thread {
 
@@ -70,6 +72,7 @@ public class AudioRecording extends Thread {
             // TODO: consider buffer size
             byte[] buffer = new byte[line.getBufferSize()];
             while (!this.stopRequest) {
+                // TODO make buffer write append for all except the first save
                 line.read(buffer, 0, buffer.length);
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(buffer);
                 AudioInputStream audioInputStream = new AudioInputStream(inputStream, format, buffer.length);
@@ -78,6 +81,23 @@ public class AudioRecording extends Thread {
         } catch (LineUnavailableException | IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void appendAudioData(RandomAccessFile randomAccessFile, byte[] data, long chunkSize, long dataSize) throws IOException {
+        randomAccessFile.seek(randomAccessFile.length());
+        randomAccessFile.write(data);
+
+        randomAccessFile.seek(4);
+        randomAccessFile.write(longToByteArray(chunkSize + data.length), 0, 4);
+
+        randomAccessFile.seek(40);
+        randomAccessFile.write(longToByteArray(chunkSize + data.length), 0, 4);
+    }
+
+    private byte[] longToByteArray(long value) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(8);
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        return  byteBuffer.putLong(value).array();
     }
 
     // Closes the target data line to finish capturing and recording
