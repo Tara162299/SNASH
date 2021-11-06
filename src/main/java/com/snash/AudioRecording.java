@@ -4,6 +4,8 @@ import javax.sound.sampled.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Random;
+import java.util.RandomAccess;
 
 public class AudioRecording extends Thread {
 
@@ -71,12 +73,33 @@ public class AudioRecording extends Thread {
 
             // TODO: consider buffer size
             byte[] buffer = new byte[line.getBufferSize()];
+
+            // first recording loop is different, this one does the official write
+            line.read(buffer, 0, buffer.length);
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(buffer);
+            AudioInputStream audioInputStream = new AudioInputStream(inputStream, format, buffer.length);
+            AudioSystem.write(audioInputStream, fileType, wavFile);
+
+            // get starting chunk size and dataSize
+            RandomAccessFile randomAccessFile = new RandomAccessFile(wavFile, "rw");
+
+            randomAccessFile.seek(4);
+            byte[] chunkSizeArray = new byte[4];
+            byte[] dataSizeArray = new byte[4];
+
+            randomAccessFile.seek(4);
+            randomAccessFile.read(chunkSizeArray);
+            long chunkSize = byteArrayToLong(chunkSizeArray);
+
+            randomAccessFile.seek(40);
+            randomAccessFile.read(dataSizeArray);
+            long dataSize = byteArrayToLong(dataSizeArray);
+
             while (!this.stopRequest) {
-                // TODO make buffer write append for all except the first save
                 line.read(buffer, 0, buffer.length);
-                ByteArrayInputStream inputStream = new ByteArrayInputStream(buffer);
-                AudioInputStream audioInputStream = new AudioInputStream(inputStream, format, buffer.length);
-                AudioSystem.write(audioInputStream, fileType, wavFile);
+                appendAudioData(randomAccessFile, buffer, chunkSize, dataSize);
+                chunkSize += buffer.length;
+                dataSize += buffer.length;
             }
         } catch (LineUnavailableException | IOException ex) {
             ex.printStackTrace();
@@ -98,6 +121,16 @@ public class AudioRecording extends Thread {
         ByteBuffer byteBuffer = ByteBuffer.allocate(8);
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         return  byteBuffer.putLong(value).array();
+    }
+
+    private long byteArrayToLong(byte[] array) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(8);
+        byte[] bufferArray = new byte[8];
+        for (int i = 0; i < array.length; i++)  {
+            bufferArray[i] = array[i];
+        }
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        return byteBuffer.put(bufferArray).getLong(0);
     }
 
     // Closes the target data line to finish capturing and recording
