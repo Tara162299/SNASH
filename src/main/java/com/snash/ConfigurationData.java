@@ -16,7 +16,7 @@ import java.util.*;
 public class ConfigurationData {
     // TODO add upload configuration data
 
-    private enum SpecialValue {
+    public enum SpecialValue {
         Time,
         Date,
         Timezone
@@ -84,7 +84,7 @@ public class ConfigurationData {
                 }
 
                 Objects.requireNonNull(name, "Every metadata tag must have a true name.");
-                DataField newData = new DataField(name, alias, fixedValue, defaultValue, specialValue);
+                DataField newData = new DataField(name, alias, defaultValue, fixedValue, specialValue);
 
                 if (name.startsWith("FileName")) {
                     int num = Integer.parseInt(name.replaceAll("\\D+",""));

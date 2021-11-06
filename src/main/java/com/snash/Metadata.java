@@ -10,7 +10,8 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
     public class MetadataField {
         private final String name;
         private final String alias;
-        private final boolean immutable;
+        private final boolean fixed;
+        private final ConfigurationData.SpecialValue specialType;
         private String value;
 
         public MetadataField(DataField dataField) {
@@ -24,15 +25,21 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
 
             if (dataField.hasFixedValue()) {
                 this.value = dataField.fixedValue();
-                this.immutable = true;
+                this.fixed = true;
             } else {
                 this.value = dataField.defaultValue();
-                this.immutable = false;
+                this.fixed = false;
+            }
+
+            if (dataField.specialValue() != null){
+                this.specialType = dataField.specialValue();
+            } else {
+                this.specialType = null;
             }
         }
 
         public void setValue(String value){
-            if(!immutable){
+            if(!fixed){
                 this.value = value;
             }
         }
@@ -49,9 +56,11 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
             return value;
         }
 
-        public boolean isImmutable(){
-            return immutable;
+        public boolean isFixed(){
+            return fixed;
         }
+
+        public ConfigurationData.SpecialValue getSpecialType() { return specialType; }
 
         @Override
         public String toString(){
@@ -72,11 +81,10 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
     public List<MetadataField> displayFields(){
         List<MetadataField> outputList = new ArrayList<>();
         for (MetadataField field : metadataFields) {
-            if (!field.isImmutable()){
+            if (!field.isFixed() && !(field.getSpecialType() != null)){
                 outputList.add(field);
             }
         }
-
         return outputList;
     }
 
