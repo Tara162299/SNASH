@@ -91,7 +91,7 @@ public class AudioRecording extends Thread {
         randomAccessFile.write(longToByteArray(chunkSize + data.length), 0, 4);
 
         randomAccessFile.seek(40);
-        randomAccessFile.write(longToByteArray(chunkSize + data.length), 0, 4);
+        randomAccessFile.write(longToByteArray(dataSize + data.length), 0, 4);
     }
 
     private byte[] longToByteArray(long value) {
