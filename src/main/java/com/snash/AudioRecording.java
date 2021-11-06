@@ -2,17 +2,10 @@ package com.snash;
 
 import javax.sound.sampled.*;
 import java.io.*;
-
-//Define an audio format of the sound source to be captured, using the class AudioFormat.
-//Create a DataLine.Info object to hold information of a data line.
-//Obtain a TargetDataLine object which represents an input data line from which audio data can be captured, using the method getLineInfo(DataLine.Info) of the AudioSystem class.
-//Open and start the target data line to begin capturing audio data.
-//Create an AudioInputStream object to read data from the target data line.
-
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class AudioRecording extends Thread {
-    // record duration, in milliseconds
-    static final long RECORD_TIME = 10000;  // 4 seconds
 
     // flag to indicate that the recorder is requested to be stopped
     private boolean stopRequest = false;
@@ -24,7 +17,7 @@ public class AudioRecording extends Thread {
     // format of audio file
     private final AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE;
 
-    // the line from which audio data is captured
+    // the line which audio data is captured
     private TargetDataLine line;
 
     // the UI that created this
@@ -48,11 +41,10 @@ public class AudioRecording extends Thread {
                 channels, true, true);
     }
 
-    // Captures the sound and record into a WAV file
-
+    // Method to stop recording when user hit "Stop" button
     public void requestStop() {
         stopRequest = true;
-        // this.interrupt();
+        this.stopRecording();
     }
 
     private void startCapture() {
@@ -64,14 +56,14 @@ public class AudioRecording extends Thread {
 
             // checks if system supports the data line
             if (!AudioSystem.isLineSupported(info)) {
-                System.out.println("Line not supported");
+                System.out.println("Line is not supported!");
                 System.exit(0);
             }
+
             line = (TargetDataLine) AudioSystem.getLine(info);
-
             line.open(format);
-
-            line.start();  // start capturing
+            // start capturing
+            line.start();
 
             System.out.println("Start capturing...");
 
@@ -80,27 +72,41 @@ public class AudioRecording extends Thread {
             // TODO: consider buffer size
             byte[] buffer = new byte[line.getBufferSize()];
             while (!this.stopRequest) {
+                // TODO make buffer write append for all except the first save
                 line.read(buffer, 0, buffer.length);
-                // TODO: complete writing, this is attempted code that needs WritableInputStream custom object (created
-                //       in my local but not on origin)
-                // WritableInputStream inputStream = new WritableInputStream(buffer);
-                // AudioInputStream ais = new AudioInputStream(inputStream, format, inputStream.available());
-                // AudioSystem.write(ais, fileType, wavFile);
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(buffer);
+                AudioInputStream audioInputStream = new AudioInputStream(inputStream, format, buffer.length);
+                AudioSystem.write(audioInputStream, fileType, wavFile);
             }
         } catch (LineUnavailableException | IOException ex) {
             ex.printStackTrace();
         }
-        finish();
+    }
+
+    private void appendAudioData(RandomAccessFile randomAccessFile, byte[] data, long chunkSize, long dataSize) throws IOException {
+        randomAccessFile.seek(randomAccessFile.length());
+        randomAccessFile.write(data);
+
+        randomAccessFile.seek(4);
+        randomAccessFile.write(longToByteArray(chunkSize + data.length), 0, 4);
+
+        randomAccessFile.seek(40);
+        randomAccessFile.write(longToByteArray(chunkSize + data.length), 0, 4);
+    }
+
+    private byte[] longToByteArray(long value) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(8);
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        return  byteBuffer.putLong(value).array();
     }
 
     // Closes the target data line to finish capturing and recording
-
     private void finish() {
         isRecording = false;
         line.stop();
         line.flush();
         line.close();
-        System.out.println("Finished");
+        System.out.println("Finished!");
     }
 
     private void stopRecording() {
@@ -114,19 +120,6 @@ public class AudioRecording extends Thread {
 
     @Override
     public void run() {
-        // creates a new thread that waits for a specified
-        // of time before stopping
-
-        Thread stopper = new Thread(() -> {
-            try {
-                Thread.sleep(RECORD_TIME);
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-
-            this.requestStop();
-        });
-        // stopper.start();
         this.startCapture();
 
     }
