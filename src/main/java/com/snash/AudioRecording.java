@@ -36,11 +36,11 @@ public class AudioRecording extends Thread {
 
     // Defines an audio format
     private AudioFormat audioFormat() {
-        float sampleRate = 16000;
-        int sampleSizeInBits = 8;
+        float sampleRate = 44100;
+        int sampleSizeInBits = 16;
         int channels = 1;
         return new AudioFormat(sampleRate, sampleSizeInBits,
-                channels, true, true);
+                channels, true, false);
     }
 
     // Method to stop recording when user hit "Stop" button
@@ -72,7 +72,7 @@ public class AudioRecording extends Thread {
             isRecording = true;
 
             // TODO: consider buffer size
-            byte[] buffer = new byte[line.getBufferSize()];
+            byte[] buffer = new byte[line.getBufferSize() / 5];
 
             // first recording loop is different, this one does the official write
             line.read(buffer, 0, buffer.length);
