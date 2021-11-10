@@ -1,11 +1,12 @@
 package com.snash;
 
 import javax.sound.sampled.*;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Random;
-import java.util.RandomAccess;
 
 public class AudioRecording extends Thread {
 
@@ -32,6 +33,10 @@ public class AudioRecording extends Thread {
         this.recordingUI = recordingUI;
         this.metadata = metadata;
         wavFile = new File(metadata.getFilePath() + "\\Test.wav");
+    }
+
+    public File getWaveFile() {
+        return wavFile;
     }
 
     // Defines an audio format
@@ -70,6 +75,14 @@ public class AudioRecording extends Thread {
             System.out.println("Start capturing...");
 
             isRecording = true;
+//
+//
+//            AudioInputStream ais = new AudioInputStream(line);
+//
+//            System.out.println("Start recording...");
+//
+//            // start recording
+//            AudioSystem.write(ais, fileType, wavFile);
 
             // TODO: consider buffer size
             byte[] buffer = new byte[line.getBufferSize() / 5];

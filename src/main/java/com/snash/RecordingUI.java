@@ -1,9 +1,13 @@
 package com.snash;
 
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 public class RecordingUI extends Group {
@@ -20,6 +24,21 @@ public class RecordingUI extends Group {
     private Button startButton;
     private Button pauseButton;
     private GridPane grid;
+
+    private Slider volumeSlider;
+
+    public Region createVolumeSlider(Metadata metadata) {
+        volumeSlider = new Slider(0, 1, 1);
+        volumeSlider.setOrientation(Orientation.HORIZONTAL);
+
+
+        VBox controls = new VBox(5);
+        controls.getChildren().setAll(volumeSlider);
+
+        controls.setAlignment(Pos.CENTER);
+
+        return controls;
+    }
 
     public RecordingUI(Metadata metadata) {
 
@@ -66,6 +85,11 @@ public class RecordingUI extends Group {
         grid.add(restartButton, 3, 1);
         grid.add(stopButton, 4, 1);
         grid.add(doneButton, 5, 1);
+
+
+        grid.getChildren().addAll(
+                createVolumeSlider(metadata));
+
         this.getChildren().add(grid);
 
 
