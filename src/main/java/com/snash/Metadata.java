@@ -7,7 +7,7 @@ import com.snash.ConfigurationData.DataField;
 
 public class Metadata implements Iterable<Metadata.MetadataField> {
 
-    public class MetadataField {
+    public static class MetadataField {
         private final String name;
         private final String alias;
         private final boolean fixed;

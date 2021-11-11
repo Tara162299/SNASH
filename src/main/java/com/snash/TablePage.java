@@ -61,6 +61,7 @@ public class TablePage extends Group {
             chooser.showOpenDialog(null);
             if(chooser.getSelectedFile() != null){
                 ((MTableUI) getParent()).setPath(chooser.getSelectedFile().getPath());
+                //TODO: Make record button not show unless a file was selected.
             }
         });
 

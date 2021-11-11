@@ -61,7 +61,7 @@ public class MTableUI extends Group {
         // If the page number is too high, add more pages.
         for (int i = pages.size(); i <= pageNumber; i++){
             boolean isLastPage = (pageNumber == lastPage);
-            TablePage newPage = new TablePage(i, nextXFields(metadata, MAX_FIELDS_PER_PAGE), isLastPage);
+            TablePage newPage = new TablePage(i, nextFields(metadata), isLastPage);
             pages.add(newPage);
         }
         showPage(pageNumber);
@@ -83,13 +83,13 @@ public class MTableUI extends Group {
         this.path = path;
     }
 
-    // Returns a list of the next (at most) x undisplayed metadata fields.
-    // The list will be shorter if there are not x more undisplayed fields.
-    private List<Metadata.MetadataField> nextXFields(Metadata metadata, int x){
+    // Returns a list of the next undisplayed metadata fields, up to the max per page.
+    // The list will be shorter if there are not that many more undisplayed fields.
+    private List<Metadata.MetadataField> nextFields(Metadata metadata){
         List<Metadata.MetadataField> outputList = new ArrayList<>();
         List<Metadata.MetadataField> displayFields = metadata.displayFields();
         int i = 0;
-        while (i < x && i + fieldsDisplayed < displayFields.size()){
+        while (i < MAX_FIELDS_PER_PAGE && i + fieldsDisplayed < displayFields.size()){
             outputList.add(displayFields.get(i + fieldsDisplayed));
             i++;
         }

@@ -6,17 +6,11 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
-import java.io.BufferedReader;
 import com.box.sdk.BoxAPIConnection;
 import com.box.sdk.BoxAPIException;
 import com.box.sdk.BoxFolder;
 import com.box.sdk.BoxFile;
-import com.box.sdk.BoxFile.Info;
-import com.box.sdk.BoxItem;
-import com.box.sdk.BoxUser;
 import com.box.sdk.FileUploadParams;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -36,6 +30,7 @@ public class Upload {
     private static final int CHUNKED_UPLOAD_MINIMUM = 20000;
     //private String directoryName;
 
+    // Might be worth splitting this one up into separate methods, it's a little big.
     public static void upload(String directoryName) {
           Path uploadFolderPath = Paths.get(directoryName);
           BoxAPIConnection client = new BoxAPIConnection(DEVELOPER_TOKEN);
@@ -61,7 +56,7 @@ public class Upload {
                   System.out.println(fileName);
                   byte[] fileBytes = Files.readAllBytes(path);
                   int fileSize = fileBytes.length;
-                  boolean useChunkedUpload = (fileSize > CHUNKED_UPLOAD_MINIMUM) ? true : false;
+                  boolean useChunkedUpload = fileSize > CHUNKED_UPLOAD_MINIMUM;
                   uploadedFiles.add(uploadEachFile(client, createdFolderId, fileName, fileSize, fileBytes, useChunkedUpload));
               }
           }
