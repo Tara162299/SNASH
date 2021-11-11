@@ -88,6 +88,16 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
         return outputList;
     }
 
+    public List<MetadataField> specialFields(){
+        List<MetadataField> outputList = new ArrayList<>();
+        for (MetadataField field : metadataFields) {
+            if (field.getSpecialType() != null){
+                outputList.add(field);
+            }
+        }
+        return outputList;
+    }
+
     public int length(){
         return metadataFields.size();
     }

@@ -102,11 +102,11 @@ public class AudioRecording extends Thread {
 
             randomAccessFile.seek(4);
             randomAccessFile.read(chunkSizeArray);
-            long chunkSize = byteArrayToLong(chunkSizeArray);
+            long chunkSize = OutputFile.byteArrayToLong(chunkSizeArray);
 
             randomAccessFile.seek(40);
             randomAccessFile.read(dataSizeArray);
-            long dataSize = byteArrayToLong(dataSizeArray);
+            long dataSize = OutputFile.byteArrayToLong(dataSizeArray);
 
             while (!this.stopRequest) {
                 line.read(buffer, 0, buffer.length);
@@ -124,26 +124,10 @@ public class AudioRecording extends Thread {
         randomAccessFile.write(data);
 
         randomAccessFile.seek(4);
-        randomAccessFile.write(longToByteArray(chunkSize + data.length), 0, 4);
+        randomAccessFile.write(OutputFile.longToByteArray(chunkSize + data.length), 0, 4);
 
         randomAccessFile.seek(40);
-        randomAccessFile.write(longToByteArray(dataSize + data.length), 0, 4);
-    }
-
-    private byte[] longToByteArray(long value) {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(8);
-        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        return  byteBuffer.putLong(value).array();
-    }
-
-    private long byteArrayToLong(byte[] array) {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(8);
-        byte[] bufferArray = new byte[8];
-        for (int i = 0; i < array.length; i++)  {
-            bufferArray[i] = array[i];
-        }
-        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        return byteBuffer.put(bufferArray).getLong(0);
+        randomAccessFile.write(OutputFile.longToByteArray(dataSize + data.length), 0, 4);
     }
 
     // Closes the target data line to finish capturing and recording
