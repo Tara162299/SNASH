@@ -169,6 +169,8 @@ public class OutputFile {
         randomAccessFile.seek(randomAccessFile.length());
         randomAccessFile.write(data);
 
+        randomAccessFile.close();
+
         return true;
     }
 
