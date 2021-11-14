@@ -84,9 +84,11 @@ public class ConfigurationData {
         String alias = tagTextFromElement("alias", element);
         String fixedValue = tagTextFromElement("fixedValue", element);
         String defaultValue = tagTextFromElement("defaultValue", element);
-        SpecialValue specialValue = stringToSpecialValue(tagTextFromElement("specialValue", element));
+        SpecialValue specialValue = stringToSpecialValue(name, tagTextFromElement("specialValue", element));
 
         Objects.requireNonNull(name, "Every metadata tag must have a true name.");
+
+        printWarningMessage(name,fixedValue != null, defaultValue != null, specialValue != null);
 
         if (fixedValue != null){
             return new DataField(name, alias, fixedValue, null, ValueType.FIXED);
@@ -97,9 +99,36 @@ public class ConfigurationData {
         }
     }
 
+    private void printWarningMessage(String name, boolean hasFixed, boolean hasDefault, boolean hasSpecial) {
+        if (hasFixed) {
+            printWarningMessageFixed(name, hasDefault, hasSpecial);
+        } else if (hasDefault && hasSpecial){
+            System.out.println("Metadata field " + name + "has both a default and special value.");
+            System.out.println("In this case, the default value will be ignored.");
+        }
+    }
+
+    private void printWarningMessageFixed(String name, boolean hasDefault, boolean hasSpecial){
+        if (hasDefault){
+            if (hasSpecial){
+                System.out.println("Metadata field " + name + "has both a fixed, default, and special value.");
+                System.out.println("In this case, the default and special values will be ignored.");
+            } else {
+                System.out.println("Metadata field " + name + "has both a fixed and default value.");
+                System.out.println("In this case, the default value will be ignored.");
+            }
+        } else if (hasSpecial) {
+            System.out.println("Metadata field " + name + "has both a fixed and special value.");
+            System.out.println("In this case, the special value will be ignored.");
+        }
+    }
+
     private String tagTextFromElement(String tag, Element element){
         NodeList tags = element.getElementsByTagName(tag);
         if (tags.getLength() > 0) {
+            if (tags.getLength() > 1){
+                System.out.println("A metadata field has two " + tag + "tags. All but the first will be ignored.");
+            }
             return tags.item(0).getTextContent();
         } else {
             return null;
@@ -111,17 +140,21 @@ public class ConfigurationData {
     }
 
     // Parses a special value from a string. Returns null if the string is null or invalid.
-    private SpecialValue stringToSpecialValue(String string) {
+    private SpecialValue stringToSpecialValue(String name, String string) {
         if (string == null){
             return null;
         }
 
         String str = string.toLowerCase();
-        return switch (str) {
-            case "time" -> SpecialValue.Time;
-            case "date" -> SpecialValue.Date;
-            case "timezone", "time zone" -> SpecialValue.Timezone;
-            default -> null;
-        };
+        SpecialValue output;
+        switch (str) {
+            case "time" : output = SpecialValue.Time; break;
+            case "date" : output = SpecialValue.Date; break;
+            case "timezone", "time zone" : output = SpecialValue.Timezone; break;
+            default :
+                System.out.println("Metadata field " + name + "has an invalid special value. It will be ignored.");
+                output = null;
+        }
+        return output;
     }
 }
