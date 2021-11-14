@@ -54,81 +54,61 @@ public class ConfigurationData {
 
         Document doc = builder.parse(configFile);
         Element root = doc.getDocumentElement();
-        NodeList dataFields =  root.getElementsByTagName("metadata");
-        for (int i = 0; i < dataFields.getLength(); i++) {
-            Node field = dataFields.item(i);
-            if (field.getNodeType() == Node.ELEMENT_NODE) {
-                // TODO handle missing unnecessary fields rather than requiring all
-                Element fieldElement = (Element) field;
-                String name = null, alias = null, fixedValue = null, defaultValue = null;
-                SpecialValue specialValue = null;
-                NodeList tags = fieldElement.getElementsByTagName("name");
-                if (tags.getLength() > 0) {
-                    name = tags.item(0).getTextContent();
-                }
-                tags = fieldElement.getElementsByTagName("alias");
-                if (tags.getLength() > 0) {
-                    alias = tags.item(0).getTextContent();
-                }
-                tags = fieldElement.getElementsByTagName("fixedValue");
-                if (tags.getLength() > 0) {
-                    fixedValue = tags.item(0).getTextContent();
-                }
-                tags = fieldElement.getElementsByTagName("defaultValue");
-                if (tags.getLength() > 0) {
-                     defaultValue = tags.item(0).getTextContent();
-                }
-                tags = fieldElement.getElementsByTagName("specialValue");
-                if (tags.getLength() > 0) {
-                    specialValue = stringToSpecialValue(tags.item(0).getTextContent());
-                }
 
-                Objects.requireNonNull(name, "Every metadata tag must have a true name.");
-                DataField newData = new DataField(name, alias, defaultValue, fixedValue, specialValue);
+        NodeList nodeList = root.getElementsByTagName("metadata");
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                DataField dataField = dataFieldFromElement((Element) node);
 
-                if (name.startsWith("FileName")) {
-                    int num = Integer.parseInt(name.replaceAll("\\D+",""));
-                    fileNameFields.put(num, newData);
+                if (dataField.name().startsWith("FileName")) {
+                    int num = Integer.parseInt(dataField.name().replaceAll("\\D+",""));
+                    fileNameFields.put(num, dataField);
                 }
                 else {
-                    metadataFields.put(name, newData);
+                    metadataFields.put(dataField.name(), dataField);
                 }
             }
         }
+    }
 
+    private DataField dataFieldFromElement(Element element){
+        // TODO handle missing unnecessary fields rather than requiring all
+        String name = tagTextFromElement("name", element);
+        String alias = tagTextFromElement("alias", element);
+        String fixedValue = tagTextFromElement("fixedValue", element);
+        String defaultValue = tagTextFromElement("defaultValue", element);
+        SpecialValue specialValue = stringToSpecialValue(tagTextFromElement("specialValue", element));
+
+        Objects.requireNonNull(name, "Every metadata tag must have a true name.");
+        return new DataField(name, alias, defaultValue, fixedValue, specialValue);
+    }
+
+    private String tagTextFromElement(String tag, Element element){
+        NodeList tags = element.getElementsByTagName(tag);
+        if (tags.getLength() > 0) {
+            return tags.item(0).getTextContent();
+        } else {
+            return null;
+        }
     }
 
     public Collection<DataField> getMetadataFields(){
         return metadataFields.values();
     }
 
-    public DataField getMetadataField(String name) {
-        return metadataFields.get(name);
-    }
-
-    public boolean hasMetadataField(String name) {
-        return metadataFields.containsKey(name);
-    }
-
-    public DataField getFileNameField(int index) {
-        return fileNameFields.get(index);
-    }
-
-    public boolean hasFileNameField(int index) {
-        return fileNameFields.containsKey(index);
-    }
-
+    // Parses a special value from a string. Returns null if the string is null or invalid.
     private SpecialValue stringToSpecialValue(String string) {
-        String str = string.toLowerCase();
-        switch (str) {
-            case "time":
-                return SpecialValue.Time;
-            case "date":
-                return SpecialValue.Date;
-            case "timezone":
-                return SpecialValue.Timezone;
-            default:
-                return null;
+        if (string == null){
+            return null;
         }
+
+        String str = string.toLowerCase();
+        return switch (str) {
+            case "time" -> SpecialValue.Time;
+            case "date" -> SpecialValue.Date;
+            case "timezone", "time zone" -> SpecialValue.Timezone;
+            default -> null;
+        };
     }
 }
