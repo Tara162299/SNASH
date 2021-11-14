@@ -75,44 +75,17 @@ public class AudioRecording extends Thread {
             System.out.println("Start capturing...");
 
             isRecording = true;
-//
-//
-//            AudioInputStream ais = new AudioInputStream(line);
-//
-//            System.out.println("Start recording...");
-//
-//            // start recording
-//            AudioSystem.write(ais, fileType, wavFile);
 
             // TODO: consider buffer size
             byte[] buffer = new byte[line.getBufferSize() / 5];
 
-            // first recording loop is different, this one does the official write
-            line.read(buffer, 0, buffer.length);
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(buffer);
-            AudioInputStream audioInputStream = new AudioInputStream(inputStream, format, buffer.length);
-            AudioSystem.write(audioInputStream, fileType, wavFile);
-
-            // get starting chunk size and dataSize
-            RandomAccessFile randomAccessFile = new RandomAccessFile(wavFile, "rw");
-
-            randomAccessFile.seek(4);
-            byte[] chunkSizeArray = new byte[4];
-            byte[] dataSizeArray = new byte[4];
-
-            randomAccessFile.seek(4);
-            randomAccessFile.read(chunkSizeArray);
-            long chunkSize = OutputFile.byteArrayToLong(chunkSizeArray);
-
-            randomAccessFile.seek(40);
-            randomAccessFile.read(dataSizeArray);
-            long dataSize = OutputFile.byteArrayToLong(dataSizeArray);
+            OutputFile outputFile = OutputFile.from(metadata, audioFormat());
 
             while (!this.stopRequest) {
                 line.read(buffer, 0, buffer.length);
-                appendAudioData(randomAccessFile, buffer, chunkSize, dataSize);
-                chunkSize += buffer.length;
-                dataSize += buffer.length;
+                if (!outputFile.appendAudioData(buffer)) {
+                    outputFile = outputFile.nextFile();
+                }
             }
         } catch (LineUnavailableException | IOException ex) {
             ex.printStackTrace();

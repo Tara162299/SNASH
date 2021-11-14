@@ -40,7 +40,7 @@ public class OutputFile {
 
     // Create a new OutputFile with the given metadata, and the file number 0.
     // Special fields are calculated at time of OutputFile creation!
-    public OutputFile from(Metadata metadata, AudioFormat audioFormat) throws IOException {
+    public static OutputFile from(Metadata metadata, AudioFormat audioFormat) throws IOException {
         return new OutputFile(metadata, audioFormat, 0);
     }
 
