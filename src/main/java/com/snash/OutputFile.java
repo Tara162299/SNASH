@@ -114,7 +114,7 @@ public class OutputFile {
 
         // size is 0 at this point, so it doesn't need to be set
         dataSize = 0;
-        dataSizeOffset = 44 + off;
+        dataSizeOffset = 40 + off;
 
         // write file to disk
         file = new File(metadata.getFilePath() + "\\" + fileName());
