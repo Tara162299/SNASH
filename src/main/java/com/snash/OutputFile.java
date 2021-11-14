@@ -247,15 +247,15 @@ public class OutputFile {
 
             byte[] output = new byte[subChunks.size() + 8];
             System.arraycopy(LIST_CHUNK_ID, 0, output, 0, 4);
-            System.arraycopy(size, 4, output, 4, 4);
-            for (int i = 8; i < subChunks.size() + 8; i++){ output[i] = subChunks.get(i); }
+            System.arraycopy(size, 0, output, 4, 4);
+            for (int i = 0; i < subChunks.size(); i++){ output[i + 8] = subChunks.get(i); }
             return output;
         }
 
         // Returns a 4 byte chunk representing the size of the LIST chunk minus eight.
         // Size should never really be above 20000 at the most, but this should work if it is.
         private byte[] sizeChunk(int size){
-            return new byte[] { (byte) (size / 16777216), (byte) (size / 65536), (byte) (size / 256), (byte) (size % 256) };
+            return new byte[] { (byte) (size % 256), (byte) (size / 256), (byte) (size / 65536), (byte) (size / 16777216)  };
         }
     }
 }
