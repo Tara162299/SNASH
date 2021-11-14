@@ -16,7 +16,7 @@ import javax.sound.sampled.AudioFormat;
 public class OutputFile {
 
     static final int HEADER_LENGTH_NO_INFO = 44;
-    static final long MAX_FILE_SIZE = 0xFFFFFFFF;
+    static final long MAX_FILE_SIZE = 4294967295L;
     /**private File file;
     private int headerOffset;
     private byte[] header;*/
@@ -117,7 +117,7 @@ public class OutputFile {
         dataSizeOffset = 44 + off;
 
         // write file to disk
-        file = new File(fileName());
+        file = new File(metadata.getFilePath() + "\\" + fileName());
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         fileOutputStream.write(fileBytes);
         fileOutputStream.close();
@@ -148,6 +148,7 @@ public class OutputFile {
             output.append('_');
         }
         output.append(fileNumber);
+        output.append(".wav");
         return output.toString();
     }
 
@@ -158,7 +159,7 @@ public class OutputFile {
         fileSize += data.length;
         dataSize += data.length;
 
-        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "w");
+        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
 
         randomAccessFile.seek(fileSizeOffset);
         randomAccessFile.write(longToByteArray(fileSize), 0, 4);
