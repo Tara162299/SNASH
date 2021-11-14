@@ -159,7 +159,7 @@ public class OutputFile {
         fileSize += data.length;
         dataSize += data.length;
 
-        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "w");
+        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
 
         randomAccessFile.seek(fileSizeOffset);
         randomAccessFile.write(longToByteArray(fileSize), 0, 4);
