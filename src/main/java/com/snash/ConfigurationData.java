@@ -22,21 +22,27 @@ public class ConfigurationData {
         Timezone
     }
 
+    // What type of value a DataField has.
+    public enum ValueType {
+        // In case of collision, fixed values take highest priority. In this case, the value is final after configuration.
+        FIXED,
+        // In case of collision, special values take second priority. In this case, the value is programmatically determined.
+        SPECIAL,
+        // If there is no fixed or special value, the type is normal. In this case, the value is entered by the user.
+        NORMAL
+    }
+
     /**
      * @param name  The name of the tag attached to the file, i.e. "artist"
      * @param alias The alias to be displayed to the user, i.e. "callsign"
-     * @param defaultValue  The default value, or null if there is none.
-     * @param fixedValue    The predetermined value, or null if it should be user-defined.
-     * @param specialValue  The type of special value, or null if it is not one of them.
+     * @param value  The default value or fixed value. Null if there is none, or if there is a special value.
+     * @param specialValue  The type of special value, or null if there is no special value.
+     * @param valueType The method of entry for values- config-defined, automatic, or user-defined.
      */
     public record DataField(String name, String alias,
-                            String defaultValue, String fixedValue,
-                            SpecialValue specialValue) {
+                            String value, SpecialValue specialValue,
+                            ValueType valueType) {}
 
-        public boolean hasFixedValue() {
-            return fixedValue != null;
-        }
-    }
 
     private final Map<String, DataField> metadataFields;
     private final Map<Integer, DataField> fileNameFields;
@@ -81,7 +87,14 @@ public class ConfigurationData {
         SpecialValue specialValue = stringToSpecialValue(tagTextFromElement("specialValue", element));
 
         Objects.requireNonNull(name, "Every metadata tag must have a true name.");
-        return new DataField(name, alias, defaultValue, fixedValue, specialValue);
+
+        if (fixedValue != null){
+            return new DataField(name, alias, fixedValue, null, ValueType.FIXED);
+        } else if (specialValue != null){
+            return new DataField(name, alias, null, specialValue, ValueType.SPECIAL);
+        } else {
+            return new DataField(name, alias, defaultValue, null, ValueType.NORMAL);
+        }
     }
 
     private String tagTextFromElement(String tag, Element element){

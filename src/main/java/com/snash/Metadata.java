@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import com.snash.ConfigurationData.DataField;
+import com.snash.ConfigurationData.ValueType;
+import com.snash.ConfigurationData.SpecialValue;
 
 public class Metadata implements Iterable<Metadata.MetadataField> {
 
     public static class MetadataField {
         private final String name;
         private final String alias;
-        private final boolean fixed;
-        private final ConfigurationData.SpecialValue specialType;
+        private final ValueType valueType;
+        private final SpecialValue specialType;
         private String value;
 
         public MetadataField(DataField dataField) {
@@ -23,23 +25,12 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
                 alias = name;
             }
 
-            if (dataField.hasFixedValue()) {
-                this.value = dataField.fixedValue();
-                this.fixed = true;
-            } else {
-                this.value = dataField.defaultValue();
-                this.fixed = false;
-            }
-
-            if (dataField.specialValue() != null){
-                this.specialType = dataField.specialValue();
-            } else {
-                this.specialType = null;
-            }
+            valueType = dataField.valueType();
+            specialType = dataField.specialValue();
         }
 
         public void setValue(String value){
-            if(!fixed){
+            if(valueType == ValueType.NORMAL){
                 this.value = value;
             }
         }
@@ -56,11 +47,7 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
             return value;
         }
 
-        public boolean isFixed(){
-            return fixed;
-        }
-
-        public ConfigurationData.SpecialValue getSpecialType() { return specialType; }
+        public SpecialValue getSpecialType() { return specialType; }
 
         @Override
         public String toString(){
@@ -81,7 +68,7 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
     public List<MetadataField> displayFields(){
         List<MetadataField> outputList = new ArrayList<>();
         for (MetadataField field : metadataFields) {
-            if (!field.isFixed() && !(field.getSpecialType() != null)){
+            if (field.valueType == ValueType.NORMAL){
                 outputList.add(field);
             }
         }
@@ -91,7 +78,7 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
     public List<MetadataField> specialFields(){
         List<MetadataField> outputList = new ArrayList<>();
         for (MetadataField field : metadataFields) {
-            if (field.getSpecialType() != null){
+            if (field.valueType == ValueType.SPECIAL){
                 outputList.add(field);
             }
         }
