@@ -117,7 +117,7 @@ public class OutputFile {
         dataSizeOffset = 44 + off;
 
         // write file to disk
-        file = new File(fileName());
+        file = new File(metadata.getFilePath() + "\\" + fileName());
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         fileOutputStream.write(fileBytes);
         fileOutputStream.close();
@@ -148,6 +148,7 @@ public class OutputFile {
             output.append('_');
         }
         output.append(fileNumber);
+        output.append(".wav");
         return output.toString();
     }
 
