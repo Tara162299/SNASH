@@ -1,5 +1,8 @@
 package com.snash;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
@@ -7,28 +10,38 @@ import java.util.*;
 
 import com.snash.Metadata.MetadataField;
 
+import javax.sound.sampled.AudioFormat;
+
 public class OutputFile {
 
+    static final int HEADER_LENGTH_NO_INFO = 44;
     /**private File file;
     private int headerOffset;
     private byte[] header;*/
     private final Metadata metadata;
+    private final AudioFormat audioFormat;
     private final int fileNumber;
 
     private final String date;
     private final String time;
     private final String timeZone;
 
+    private File file;
+
+    private long fileSizeOffset;
+    private long dataSizeOffset;
+
     private byte[] listChunkBytes;
 
     // Create a new OutputFile with the given metadata, and the file number 0.
     // Special fields are calculated at time of OutputFile creation!
-    public OutputFile from(Metadata metadata){
-        return new OutputFile(metadata, 0);
+    public OutputFile from(Metadata metadata, AudioFormat audioFormat) throws IOException {
+        return new OutputFile(metadata, audioFormat, 0);
     }
 
-    private OutputFile(Metadata metadata, int fileNumber){
+    private OutputFile(Metadata metadata, AudioFormat audioFormat, int fileNumber) throws IOException {
         this.metadata = metadata;
+        this.audioFormat = audioFormat;
         this.fileNumber = fileNumber;
 
         //stackabuse.com/how-to-get-current-date-and-time-in-java/
@@ -42,11 +55,71 @@ public class OutputFile {
             chunk.addTag(field.getName(), field.getValue());
         }
         listChunkBytes = chunk.byteArray();
+
+        byte[] fileBytes = new byte[HEADER_LENGTH_NO_INFO + listChunkBytes.length];
+
+        // see http://soundfile.sapp.org/doc/WaveFormat/ for WAVE spec
+        // create riff header
+        fileBytes[0] = (byte) 'R';
+        fileBytes[1] = (byte) 'I';
+        fileBytes[2] = (byte) 'F';
+        fileBytes[3] = (byte) 'F';
+
+        System.arraycopy(longToByteArray(44 + listChunkBytes.length), 0, fileBytes, 4, 4);
+        fileSizeOffset = 4;
+
+        fileBytes[8] = (byte) 'W';
+        fileBytes[9] = (byte) 'A';
+        fileBytes[10] = (byte) 'V';
+        fileBytes[11] = (byte) 'E';
+
+        // add info chunk
+        System.arraycopy(listChunkBytes, 0, fileBytes, 12, listChunkBytes.length);
+
+        // add "fmt " sub-chunk
+        int off = listChunkBytes.length;
+        fileBytes[12 + off] = (byte) 'f';
+        fileBytes[13 + off] = (byte) 'm';
+        fileBytes[14 + off] = (byte) 't';
+        fileBytes[15 + off] = (byte) ' ';
+
+        System.arraycopy(longToByteArray(16), 0, fileBytes, 16 + off, 4);
+
+        System.arraycopy(longToByteArray(1), 0, fileBytes, 20 + off, 2);
+
+        System.arraycopy(longToByteArray(audioFormat.getChannels()), 0, fileBytes, 22 + off, 2);
+
+        System.arraycopy(longToByteArray((long) audioFormat.getSampleRate()), 0, fileBytes, 24 + off, 4);
+
+        // ByteRate
+        System.arraycopy(longToByteArray(audioFormat.getFrameSize() * (long) audioFormat.getFrameRate()), 0, fileBytes, 28 + off, 4);
+
+        // BlockAlign
+        System.arraycopy(longToByteArray(audioFormat.getFrameSize()), 0, fileBytes, 32 + off, 2);
+
+        // BitsPerSample
+        System.arraycopy(longToByteArray(audioFormat.getSampleSizeInBits()), 0, fileBytes, 34 + off, 2);
+
+        // add "data" sub-chunk
+        fileBytes[36 + off] = (byte) 'd';
+        fileBytes[37 + off] = (byte) 'a';
+        fileBytes[38 + off] = (byte) 't';
+        fileBytes[39 + off] = (byte) 'a';
+
+        // size is 0 at this point, so it doesn't need to be set
+
+        dataSizeOffset = 44 + off;
+
+        // write file to disk
+        file = new File(fileName());
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fileOutputStream.write(fileBytes);
+        fileOutputStream.close();
     }
 
     // Create a new OutputFile with the current metadata, and the next file number.
-    public OutputFile nextFile(){
-        return new OutputFile(metadata, fileNumber + 1);
+    public OutputFile nextFile() throws IOException {
+        return new OutputFile(metadata, audioFormat, fileNumber + 1);
     }
 
     public String fileName(){
