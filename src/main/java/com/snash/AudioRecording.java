@@ -119,17 +119,6 @@ public class AudioRecording extends Thread {
         }
     }
 
-    private void appendAudioData(RandomAccessFile randomAccessFile, byte[] data, long chunkSize, long dataSize) throws IOException {
-        randomAccessFile.seek(randomAccessFile.length());
-        randomAccessFile.write(data);
-
-        randomAccessFile.seek(4);
-        randomAccessFile.write(OutputFile.longToByteArray(chunkSize + data.length), 0, 4);
-
-        randomAccessFile.seek(40);
-        randomAccessFile.write(OutputFile.longToByteArray(dataSize + data.length), 0, 4);
-    }
-
     // Closes the target data line to finish capturing and recording
     private void finish() {
         isRecording = false;

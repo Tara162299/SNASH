@@ -3,6 +3,7 @@ package com.snash;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,7 @@ import javax.sound.sampled.AudioFormat;
 public class OutputFile {
 
     static final int HEADER_LENGTH_NO_INFO = 44;
+    static final long MAX_FILE_SIZE = 0xFFFFFFFF;
     /**private File file;
     private int headerOffset;
     private byte[] header;*/
@@ -30,6 +32,9 @@ public class OutputFile {
 
     private long fileSizeOffset;
     private long dataSizeOffset;
+
+    private long fileSize;
+    private long dataSize;
 
     private byte[] listChunkBytes;
 
@@ -65,7 +70,8 @@ public class OutputFile {
         fileBytes[2] = (byte) 'F';
         fileBytes[3] = (byte) 'F';
 
-        System.arraycopy(longToByteArray(44 + listChunkBytes.length), 0, fileBytes, 4, 4);
+        fileSize = 44 + listChunkBytes.length;
+        System.arraycopy(longToByteArray(fileSize), 0, fileBytes, 4, 4);
         fileSizeOffset = 4;
 
         fileBytes[8] = (byte) 'W';
@@ -107,7 +113,7 @@ public class OutputFile {
         fileBytes[39 + off] = (byte) 'a';
 
         // size is 0 at this point, so it doesn't need to be set
-
+        dataSize = 0;
         dataSizeOffset = 44 + off;
 
         // write file to disk
@@ -143,6 +149,31 @@ public class OutputFile {
         }
         output.append(fileNumber);
         return output.toString();
+    }
+
+    public boolean appendAudioData(byte[] data) throws IOException {
+        if (!canAppendAudioData(data)) {
+            return false;
+        }
+        fileSize += data.length;
+        dataSize += data.length;
+
+        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "w");
+
+        randomAccessFile.seek(fileSizeOffset);
+        randomAccessFile.write(longToByteArray(fileSize), 0, 4);
+
+        randomAccessFile.seek(dataSizeOffset);
+        randomAccessFile.write(longToByteArray(dataSize), 0, 4);
+
+        randomAccessFile.seek(randomAccessFile.length());
+        randomAccessFile.write(data);
+
+        return true;
+    }
+
+    public boolean canAppendAudioData(byte[] data) {
+        return fileSize + data.length <= MAX_FILE_SIZE;
     }
 
     static byte[] stringToByteArray(String text){
