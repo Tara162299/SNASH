@@ -103,7 +103,7 @@ public class ConfigurationData {
         if (hasFixed) {
             printWarningMessageFixed(name, hasDefault, hasSpecial);
         } else if (hasDefault && hasSpecial){
-            System.out.println("Metadata field " + name + "has both a default and special value.");
+            System.out.println("Metadata field " + name + " has both a special and default value.");
             System.out.println("In this case, the default value will be ignored.");
         }
     }
@@ -111,14 +111,14 @@ public class ConfigurationData {
     private void printWarningMessageFixed(String name, boolean hasDefault, boolean hasSpecial){
         if (hasDefault){
             if (hasSpecial){
-                System.out.println("Metadata field " + name + "has both a fixed, default, and special value.");
+                System.out.println("Metadata field " + name + " has both a fixed, special, and default value.");
                 System.out.println("In this case, the default and special values will be ignored.");
             } else {
-                System.out.println("Metadata field " + name + "has both a fixed and default value.");
+                System.out.println("Metadata field " + name + " has both a fixed and default value.");
                 System.out.println("In this case, the default value will be ignored.");
             }
         } else if (hasSpecial) {
-            System.out.println("Metadata field " + name + "has both a fixed and special value.");
+            System.out.println("Metadata field " + name + " has both a fixed and special value.");
             System.out.println("In this case, the special value will be ignored.");
         }
     }
@@ -127,7 +127,7 @@ public class ConfigurationData {
         NodeList tags = element.getElementsByTagName(tag);
         if (tags.getLength() > 0) {
             if (tags.getLength() > 1){
-                System.out.println("A metadata field has two " + tag + "tags. All but the first will be ignored.");
+                System.out.println("A metadata field has two " + tag + " tags. All but the first will be ignored.");
             }
             return tags.item(0).getTextContent();
         } else {
@@ -152,7 +152,7 @@ public class ConfigurationData {
             case "date" : output = SpecialValue.Date; break;
             case "timezone", "time zone" : output = SpecialValue.Timezone; break;
             default :
-                System.out.println("Metadata field " + name + "has an invalid special value. It will be ignored.");
+                System.out.println("Metadata field " + name + " has an invalid special value. It will be ignored.");
                 output = null;
         }
         return output;
