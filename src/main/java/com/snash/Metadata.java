@@ -27,6 +27,7 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
 
             valueType = dataField.valueType();
             specialType = dataField.specialValue();
+            value = dataField.value();
         }
 
         public void setValue(String value){
@@ -48,6 +49,7 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
         }
 
         public SpecialValue getSpecialType() { return specialType; }
+        public ValueType getValueType() { return valueType; }
 
         @Override
         public String toString(){

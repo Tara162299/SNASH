@@ -51,13 +51,18 @@ public class OutputFile {
 
         //stackabuse.com/how-to-get-current-date-and-time-in-java/
         date = new SimpleDateFormat("dd-MM-yy").format(new Date());
-        time = new SimpleDateFormat("HH:mm").format(new Date());
+        time = new SimpleDateFormat("HH-mm").format(new Date());
         //TODO: Finding this from the internet vs the operating system would be nice.
         timeZone = TimeZone.getDefault().getDisplayName();
 
         ListChunk chunk = new ListChunk();
         for (MetadataField field : metadata){
-            chunk.addTag(field.getName(), field.getValue());
+            System.out.println(field.toString());
+            String value = field.getValue();
+            if (field.getValueType() == ConfigurationData.ValueType.SPECIAL){
+                value = specialTypeToString(field.getSpecialType());
+            }
+            chunk.addTag(field.getName(), value);
         }
         listChunkBytes = chunk.byteArray();
 
@@ -135,21 +140,25 @@ public class OutputFile {
         List<MetadataField> specialFields = metadata.specialFields();
 
         for (MetadataField field : specialFields){
-            switch (field.getSpecialType()){
-                case Date :
-                    output.append(date);
-                case Time:
-                    output.append(time);
-                case Timezone:
-                    output.append(timeZone);
-                default:
-                    break;
-            }
+            output.append(specialTypeToString(field.getSpecialType()));
             output.append('_');
         }
         output.append(fileNumber);
         output.append(".wav");
         return output.toString();
+    }
+
+    private String specialTypeToString(ConfigurationData.SpecialValue specialType){
+        switch (specialType){
+            case Date :
+                return date;
+            case Time:
+                return time;
+            case Timezone:
+                return timeZone;
+            default:
+                return "";
+        }
     }
 
     public boolean appendAudioData(byte[] data) throws IOException {
@@ -217,10 +226,7 @@ public class OutputFile {
         // The name MUST be of length 4.
         // TODO: Can the tag name and value be any ASCII character, or just alphanumeric, or just letters?
         public void addTag(String name, String value) {
-            if (name.length() != 4) { throw new IllegalArgumentException("INFO tags must be of length 4."); }
-            if (value.length() > 50) { throw new IllegalArgumentException("Metadata values cannot exceed length 50."); }
-            Objects.requireNonNull(name);
-            Objects.requireNonNull(value);
+            validateTagInputs(name, value);
 
             List<Byte> tagBytes = new ArrayList<>(stringToByteList(name));
 
@@ -233,6 +239,13 @@ public class OutputFile {
 
             tagBytes.addAll(stringToByteList(value));
             subChunks.addAll(tagBytes);
+        }
+
+        private void validateTagInputs(String name, String value){
+            Objects.requireNonNull(name);
+            Objects.requireNonNull(value);
+            if (name.length() != 4) { throw new IllegalArgumentException("INFO tags must be of length 4."); }
+            if (value.length() > 50) { throw new IllegalArgumentException("Metadata values cannot exceed length 50."); }
         }
         private List<Byte> stringToByteList(String string) {
             assert string.length() == 4;
