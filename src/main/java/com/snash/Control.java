@@ -14,7 +14,7 @@ public class Control extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("Enter Metadata");
+        stage.setTitle("SNASH");
         MTableUI mTableUI = new MTableUI();
         BorderPane.setAlignment(mTableUI, Pos.CENTER);
         stage.setScene(new Scene(new BorderPane(mTableUI)));
