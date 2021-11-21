@@ -1,17 +1,3 @@
 <?xml version = "1.0"?>
 <config>
-   <metadata>
-      <name>Artist</name>
-      <alias>Callsign</alias>
-   </metadata>
-
-   <metadata>
-      <name>Filename0</name>
-      <SpecialValue>Date</SpecialValue>
-   </metadata>
-
-   <metadata>
-      <name>Album</name>
-      <FixedValue>Eclipse Project 2021</FixedValue>
-   </metadata>
 </config>
