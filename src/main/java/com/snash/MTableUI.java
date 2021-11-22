@@ -2,6 +2,9 @@ package com.snash;
 
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -27,19 +30,51 @@ public class MTableUI extends Group {
 
     private void showConfigButtonPage(){
         Button chooseConfigButton = new Button("Choose Configuration File");
+        GridPane gridPane = new GridPane();
+        this.getChildren().add(gridPane);
+
         chooseConfigButton.setOnAction((event) -> {
-            JFileChooser chooser = new JFileChooser();
-            FileFilter xmlFilter = new FileNameExtensionFilter("XML file", "xml");
-            chooser.setFileFilter(xmlFilter);
-            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            chooser.showOpenDialog(null);
-            metadata = createMetadata(chooser.getSelectedFile());
-            if(metadata != null){
-                moveToPage(0);
-                this.getChildren().remove(chooseConfigButton);
+            File configFile = fileFromChooser();
+            ConfigurationData configData;
+            String warningMessage;
+            try {
+                configData = new ConfigurationData(configFile);
+                metadata = createMetadata(configData);
+                warningMessage = configData.warningMessage();
+            } catch (Exception e){
+                configData = null;
+                warningMessage = e.getMessage();
+            }
+
+            if (warningMessage.isEmpty()){
+                if(metadata != null){
+                    moveToPage(0);
+                    this.getChildren().remove(gridPane);
+                }
+            } else {
+                ScrollPane scrollPane = new ScrollPane(new Text(warningMessage));
+                gridPane.add(scrollPane, 0, 1);
+                if (metadata != null){
+                    Button dismissWarningButton = new Button();
+                    gridPane.add(dismissWarningButton, 0, 2);
+                    dismissWarningButton.setText("Dismiss Warning");
+                    dismissWarningButton.setOnAction((dismissEvent) -> {
+                        moveToPage(0);
+                        this.getChildren().remove(gridPane);
+                    });
+                }
             }
         });
-        this.getChildren().add(chooseConfigButton);
+        gridPane.add(chooseConfigButton, 0, 0);
+    }
+
+    private File fileFromChooser() {
+        JFileChooser chooser = new JFileChooser();
+        FileFilter xmlFilter = new FileNameExtensionFilter("XML file", "xml");
+        chooser.setFileFilter(xmlFilter);
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.showOpenDialog(null);
+        return chooser.getSelectedFile();
     }
 
     private void showPage(int pageNumber){
@@ -97,16 +132,10 @@ public class MTableUI extends Group {
         return outputList;
     }
 
-    private Metadata createMetadata(File xml) {
-        try {
-            ConfigurationData config = new ConfigurationData(xml);
-            Metadata newMetadata = new Metadata(config);
-            lastPage = newMetadata.displayFields().size() / MAX_FIELDS_PER_PAGE;
-            return newMetadata;
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-            return null;
-        }
+    private Metadata createMetadata(ConfigurationData config) {
+        Metadata newMetadata = new Metadata(config);
+        lastPage = newMetadata.displayFields().size() / MAX_FIELDS_PER_PAGE;
+        return newMetadata;
     }
 
     private void updateMetadataValues(){

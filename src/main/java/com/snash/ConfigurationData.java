@@ -43,7 +43,6 @@ public class ConfigurationData {
                             String value, SpecialValue specialValue,
                             ValueType valueType) {}
 
-
     private final Map<String, DataField> metadataFields;
     private final Map<Integer, DataField> fileNameFields;
 
@@ -88,8 +87,6 @@ public class ConfigurationData {
 
         Objects.requireNonNull(name, "Every metadata tag must have a true name.");
 
-        printWarningMessage(name,fixedValue != null, defaultValue != null, specialValue != null);
-
         if (fixedValue != null){
             return new DataField(name, alias, fixedValue, null, ValueType.FIXED);
         } else if (specialValue != null){
@@ -99,27 +96,53 @@ public class ConfigurationData {
         }
     }
 
-    private void printWarningMessage(String name, boolean hasFixed, boolean hasDefault, boolean hasSpecial) {
+    // Returns a warning message; empty if the configuration data does not have problems.
+    public String warningMessage(){
+        StringBuilder builder = new StringBuilder();
+
+        for (DataField field : metadataFields.values()){
+            boolean hasFixed = field.valueType() == ValueType.FIXED;
+            boolean hasSpecial = field.valueType() == ValueType.FIXED;
+            boolean hasDefault = field.valueType() == ValueType.FIXED;
+            String message = warningMessage(field.name(), hasFixed, hasSpecial, hasDefault);
+            if (message != null){
+                builder.append(message);
+                builder.append('\n');
+            }
+        }
+        // Delete final newline.
+        if (!builder.isEmpty()){
+            builder.deleteCharAt(builder.length() - 1);
+        }
+
+        return builder.toString();
+    }
+
+    private String warningMessage(String name, boolean hasFixed, boolean hasSpecial, boolean hasDefault) {
         if (hasFixed) {
-            printWarningMessageFixed(name, hasDefault, hasSpecial);
+            return warningMessageFixed(name, hasSpecial, hasDefault);
         } else if (hasDefault && hasSpecial){
-            System.out.println("Metadata field " + name + " has both a special and default value.");
-            System.out.println("In this case, the default value will be ignored.");
+            return "Metadata field " + name + " has both a special and default value.\n" +
+                   "In this case, the default value will be ignored.";
+        } else {
+            return null;
         }
     }
 
-    private void printWarningMessageFixed(String name, boolean hasDefault, boolean hasSpecial){
+    private String warningMessageFixed(String name, boolean hasSpecial, boolean hasDefault){
         if (hasDefault){
             if (hasSpecial){
-                System.out.println("Metadata field " + name + " has both a fixed, special, and default value.");
-                System.out.println("In this case, the default and special values will be ignored.");
+                return "Metadata field " + name + " has both a fixed, special, and default value.\n" +
+                        "In this case, the default and special values will be ignored.";
             } else {
-                System.out.println("Metadata field " + name + " has both a fixed and default value.");
-                System.out.println("In this case, the default value will be ignored.");
+                return "Metadata field " + name + " has both a fixed and default value.\n" +
+                        "In this case, the default value will be ignored.";
             }
         } else if (hasSpecial) {
-            System.out.println("Metadata field " + name + " has both a fixed and special value.");
-            System.out.println("In this case, the special value will be ignored.");
+            return "Metadata field " + name + " has both a fixed and special value.\n" +
+                    "In this case, the special value will be ignored.";
+        } else {
+            return null;
         }
     }
 
