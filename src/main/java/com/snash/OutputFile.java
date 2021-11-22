@@ -28,7 +28,7 @@ public class OutputFile {
     private final String time;
     private final String timeZone;
 
-    private File file;
+    private final File file;
 
     private long fileSizeOffset;
     private long dataSizeOffset;
@@ -149,16 +149,11 @@ public class OutputFile {
     }
 
     private String specialTypeToString(ConfigurationData.SpecialValue specialType){
-        switch (specialType){
-            case Date :
-                return date;
-            case Time:
-                return time;
-            case Timezone:
-                return timeZone;
-            default:
-                return "";
-        }
+        return switch (specialType) {
+            case Date -> date;
+            case Time -> time;
+            case Timezone -> timeZone;
+        };
     }
 
     public boolean appendAudioData(byte[] data) throws IOException {

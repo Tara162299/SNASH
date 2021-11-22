@@ -42,7 +42,7 @@ public class MTableUI extends Group {
                 metadata = createMetadata(configData);
                 warningMessage = configData.warningMessage();
             } catch (Exception e){
-                configData = null;
+                metadata = null;
                 warningMessage = e.getMessage();
             }
 
