@@ -16,6 +16,12 @@ import java.util.*;
 public class ConfigurationData {
     // TODO add upload configuration data
 
+    private static final int MAX_FIELDS = 100;
+    private static final String TOO_MANY_FIELDS_WARNING = "The maximum number of fields is " + MAX_FIELDS + ".\n" +
+                                                            "All further fields will be ignored.";
+
+    private final StringBuilder badSpecialWarningBuilder = new StringBuilder();
+
     public enum SpecialValue {
         Time,
         Date,
@@ -100,16 +106,24 @@ public class ConfigurationData {
     public String warningMessage(){
         StringBuilder builder = new StringBuilder();
 
-        for (DataField field : metadataFields.values()){
+        if (metadataFields.values().size() > MAX_FIELDS) {
+            builder.append(TOO_MANY_FIELDS_WARNING);
+            builder.append('\n');
+        }
+
+        builder.append(badSpecialWarningBuilder);
+
+        for (DataField field : metadataFields.values()) {
             boolean hasFixed = field.valueType() == ValueType.FIXED;
             boolean hasSpecial = field.valueType() == ValueType.FIXED;
             boolean hasDefault = field.valueType() == ValueType.FIXED;
             String message = warningMessage(field.name(), hasFixed, hasSpecial, hasDefault);
-            if (message != null){
+            if (message != null) {
                 builder.append(message);
                 builder.append('\n');
             }
         }
+
         // Delete final newline.
         if (!builder.isEmpty()){
             builder.deleteCharAt(builder.length() - 1);
@@ -175,7 +189,7 @@ public class ConfigurationData {
             case "date" : output = SpecialValue.Date; break;
             case "timezone", "time zone" : output = SpecialValue.Timezone; break;
             default :
-                System.out.println("Metadata field " + name + " has an invalid special value. It will be ignored.");
+                badSpecialWarningBuilder.append("Metadata field " + name + " has an invalid special value. It will be ignored.\n");
                 output = null;
         }
         return output;
