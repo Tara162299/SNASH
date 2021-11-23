@@ -12,9 +12,11 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
     public static class MetadataField {
         private final String name;
         private final String alias;
+        private String value;
+        private final boolean isMetadata;
+        private final boolean isFilename;
         private final ValueType valueType;
         private final SpecialValue specialType;
-        private String value;
 
         public MetadataField(DataField dataField) {
             name = InfoTagList.stringToInfoTag(dataField.name());
@@ -24,10 +26,13 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
             } else {
                 alias = name;
             }
+            isFilename = dataField.isFilename();
+            isMetadata = dataField.isMetadata();
 
+            value = dataField.value();
             valueType = dataField.valueType();
             specialType = dataField.specialValue();
-            value = dataField.value();
+
         }
 
         public void setValue(String value){
@@ -39,14 +44,14 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
         public String getName(){
             return name;
         }
-
         public String getAlias(){
             return alias;
         }
-
         public String getValue(){
             return value;
         }
+        public boolean isMetadata(){ return isMetadata; }
+        public boolean isFilename(){ return isFilename; }
 
         public SpecialValue getSpecialType() { return specialType; }
         public ValueType getValueType() { return valueType; }
@@ -57,19 +62,19 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
         }
     }
 
-    private final List<MetadataField> metadataFields;
+    private final List<MetadataField> dataFields;
     private String filePath = null;
 
     public Metadata(ConfigurationData configData){
-        metadataFields = new ArrayList<>();
-        for (DataField configField : configData.getMetadataFields()){
-            metadataFields.add(new MetadataField(configField));
+        dataFields = new ArrayList<>();
+        for (DataField configField : configData.dataFields()){
+            dataFields.add(new MetadataField(configField));
         }
     }
 
     public List<MetadataField> displayFields(){
         List<MetadataField> outputList = new ArrayList<>();
-        for (MetadataField field : metadataFields) {
+        for (MetadataField field : dataFields) {
             if (field.valueType == ValueType.NORMAL){
                 outputList.add(field);
             }
@@ -79,7 +84,7 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
 
     public List<MetadataField> specialFields(){
         List<MetadataField> outputList = new ArrayList<>();
-        for (MetadataField field : metadataFields) {
+        for (MetadataField field : dataFields) {
             if (field.valueType == ValueType.SPECIAL){
                 outputList.add(field);
             }
@@ -88,15 +93,15 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
     }
 
     public int length(){
-        return metadataFields.size();
+        return dataFields.size();
     }
 
     public MetadataField get(int i){
-        return metadataFields.get(i);
+        return dataFields.get(i);
     }
 
-    public List<MetadataField> getMetadataFields(){
-        return new ArrayList<>(metadataFields);
+    public List<MetadataField> getDataFields(){
+        return new ArrayList<>(dataFields);
     }
 
     public void setFilePath(String filePath){

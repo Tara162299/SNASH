@@ -57,12 +57,13 @@ public class OutputFile {
 
         ListChunk chunk = new ListChunk();
         for (MetadataField field : metadata){
-            System.out.println(field.toString());
-            String value = field.getValue();
-            if (field.getValueType() == ConfigurationData.ValueType.SPECIAL){
-                value = specialTypeToString(field.getSpecialType());
+            if (field.isMetadata()) {
+                String value = field.getValue();
+                if (field.getValueType() == ConfigurationData.ValueType.SPECIAL) {
+                    value = specialTypeToString(field.getSpecialType());
+                }
+                chunk.addTag(field.getName(), value);
             }
-            chunk.addTag(field.getName(), value);
         }
         listChunkBytes = chunk.byteArray();
 
@@ -137,12 +138,18 @@ public class OutputFile {
         StringBuilder output = new StringBuilder();
         output.append("SNASH_");
 
-        List<MetadataField> specialFields = metadata.specialFields();
+        List<MetadataField> filenameFields = metadata.getDataFields();
 
-        for (MetadataField field : specialFields){
-            output.append(specialTypeToString(field.getSpecialType()));
-            output.append('_');
+        for (MetadataField field : filenameFields){
+            if (field.isFilename()){
+                if (field.getValueType() == ConfigurationData.ValueType.SPECIAL){
+                    output.append(specialTypeToString(field.getSpecialType())).append('_');
+                } else {
+                    output.append(field.getValue()).append('_');
+                }
+            }
         }
+
         output.append(fileNumber);
         output.append(".wav");
         return output.toString();

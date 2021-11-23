@@ -17,10 +17,14 @@ public class ConfigurationData {
     // TODO add upload configuration data
 
     private static final int MAX_FIELDS = 100;
-    private static final String TOO_MANY_FIELDS_WARNING = "The maximum number of fields is " + MAX_FIELDS + ".\n" +
-                                                            "All further fields will be ignored.";
+    private static final String TOO_MANY_FIELDS_WARNING = "The maximum number of fields is " + MAX_FIELDS +
+                                                            ".\nAll further fields will be ignored.\n";
+    private static final String NO_NAME_WARNING = "A metadata field has no name. It will be ignored.\n";
+    private static final String INVALID_BOTH_WARNING = """
+            A field has a both tag whose value is not "true".
+            The tag will be ignored.""";
 
-    private final StringBuilder badSpecialWarningBuilder = new StringBuilder();
+    private final StringBuilder warningBuilder = new StringBuilder();
 
     public enum SpecialValue {
         Time,
@@ -47,17 +51,15 @@ public class ConfigurationData {
      */
     public record DataField(String name, String alias,
                             String value, SpecialValue specialValue,
+                            boolean isMetadata, boolean isFilename,
                             ValueType valueType) {}
 
-    private final Map<String, DataField> metadataFields;
-    private final Map<Integer, DataField> fileNameFields;
+    private final List<DataField> dataFields = new ArrayList<>();
 
 
     // creates configuration data from a config file
     public ConfigurationData(File configFile) throws ParserConfigurationException, IOException, SAXException {
         // TODO handle incorrectly formatted xml files
-        metadataFields = new HashMap<>();
-        fileNameFields = new HashMap<>();
 
         DocumentBuilderFactory factory =
                 DocumentBuilderFactory.newInstance();
@@ -70,93 +72,167 @@ public class ConfigurationData {
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                DataField dataField = dataFieldFromElement((Element) node);
-
-                if (dataField.name().startsWith("FileName")) {
-                    int num = Integer.parseInt(dataField.name().replaceAll("\\D+",""));
-                    fileNameFields.put(num, dataField);
+                DataField dataField = metadataFieldFromElement((Element) node);
+                if (dataField != null) {
+                    dataFields.add(dataField);
                 }
-                else {
-                    metadataFields.put(dataField.name(), dataField);
+            }
+        }
+
+        nodeList = root.getElementsByTagName("filename");
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                DataField dataField = filenameFieldFromElement((Element) node);
+                if (dataField != null) {
+                    dataFields.add(dataField);
                 }
             }
         }
     }
 
-    private DataField dataFieldFromElement(Element element){
-        // TODO handle missing unnecessary fields rather than requiring all
-        String name = tagTextFromElement("name", element);
-        String alias = tagTextFromElement("alias", element);
-        String fixedValue = tagTextFromElement("fixedValue", element);
-        String defaultValue = tagTextFromElement("defaultValue", element);
-        SpecialValue specialValue = stringToSpecialValue(name, tagTextFromElement("specialValue", element));
+    private DataField metadataFieldFromElement(Element element){
+        DataFieldParser dfp = new DataFieldParser().from(element);
 
-        Objects.requireNonNull(name, "Every metadata tag must have a true name.");
+        if (dfp.name() == null || dfp.name().isEmpty()){
+            warningBuilder.append(NO_NAME_WARNING);
+            return null;
+        }
 
-        if (fixedValue != null){
-            return new DataField(name, alias, fixedValue, null, ValueType.FIXED);
-        } else if (specialValue != null){
-            return new DataField(name, alias, null, specialValue, ValueType.SPECIAL);
+        if (dfp.fixedValue() != null){
+            return new DataField(dfp.name(), dfp.alias(), dfp.fixedValue(), null, true, dfp.isBoth(), ValueType.FIXED);
+        } else if (dfp.specialValue() != null){
+            return new DataField(dfp.name(), dfp.alias(), null, dfp.specialValue(), true, dfp.isBoth(), ValueType.SPECIAL);
         } else {
-            return new DataField(name, alias, defaultValue, null, ValueType.NORMAL);
+            return new DataField(dfp.name(), dfp.alias(), dfp.defaultValue(), null, true, dfp.isBoth(), ValueType.NORMAL);
+        }
+    }
+
+    private DataField filenameFieldFromElement(Element element){
+        DataFieldParser dfp = new DataFieldParser().from(element);
+
+        if (dfp.isBoth()){
+            if (dfp.name() == null || dfp.name().isEmpty()){
+                warningBuilder.append(NO_NAME_WARNING);
+                return null;
+            }
+        }
+
+        if (dfp.fixedValue() != null){
+            return new DataField(dfp.name(), dfp.alias(), dfp.fixedValue(), null, dfp.isBoth(), true, ValueType.FIXED);
+        } else if (dfp.specialValue() != null){
+            return new DataField(dfp.name(), dfp.alias(), null, dfp.specialValue(), dfp.isBoth(), true, ValueType.SPECIAL);
+        } else {
+            return new DataField(dfp.name(), dfp.alias(), dfp.defaultValue(), null, dfp.isBoth(), true, ValueType.NORMAL);
+        }
+
+    }
+
+    private class DataFieldParser {
+        private String name;
+        private String alias;
+        private String fixedValue;
+        private SpecialValue specialValue;
+        private String defaultValue;
+        private boolean isBoth;
+
+        private DataFieldParser(String name, String alias, String fixedValue, SpecialValue specialValue,
+                                String defaultValue, boolean isBoth){
+            this.name = name;
+            this.alias = alias;
+            this.fixedValue = fixedValue;
+            this.specialValue = specialValue;
+            this.defaultValue = defaultValue;
+            this.isBoth = isBoth;
+        }
+
+        public DataFieldParser(){}
+
+        public DataFieldParser from(Element element){
+            String name = tagTextFromElement("name", element);
+            String alias = tagTextFromElement("alias", element);
+            String fixedValue = tagTextFromElement("fixedValue", element);
+            String defaultValue = tagTextFromElement("defaultValue", element);
+            SpecialValue specialValue = stringToSpecialValue(name, tagTextFromElement("specialValue", element));
+            String both = tagTextFromElement("both", element);
+
+            boolean isBoth = bothStringToBoolean(both);
+
+            boolean hasFixed = fixedValue != null && !fixedValue.isEmpty();
+            boolean hasSpecial = specialValue != null;
+            boolean hasDefault = defaultValue != null && !defaultValue.isEmpty();
+
+            warningBuilder.append(valueTagWarningMessage(name, hasFixed, hasSpecial, hasDefault));
+
+            return new DataFieldParser(name, alias, fixedValue, specialValue, defaultValue, isBoth);
+        }
+
+        public String name(){ return name; }
+        public String alias(){ return alias; }
+        public String fixedValue(){ return fixedValue; }
+        public SpecialValue specialValue(){ return specialValue; }
+        public String defaultValue(){ return defaultValue; }
+        public boolean isBoth(){ return isBoth; }
+
+        private boolean bothStringToBoolean(String both){
+            if (both != null){
+                if (both.equals("true")){
+                    return true;
+                } else {
+                    warningBuilder.append(INVALID_BOTH_WARNING);
+                }
+            }
+            return false;
         }
     }
 
     // Returns a warning message; empty if the configuration data does not have problems.
     public String warningMessage(){
-        StringBuilder builder = new StringBuilder();
-
-        if (metadataFields.values().size() > MAX_FIELDS) {
-            builder.append(TOO_MANY_FIELDS_WARNING);
-            builder.append('\n');
-        }
-
-        builder.append(badSpecialWarningBuilder);
-
-        for (DataField field : metadataFields.values()) {
-            boolean hasFixed = field.valueType() == ValueType.FIXED;
-            boolean hasSpecial = field.valueType() == ValueType.FIXED;
-            boolean hasDefault = field.valueType() == ValueType.FIXED;
-            String message = warningMessage(field.name(), hasFixed, hasSpecial, hasDefault);
-            if (message != null) {
-                builder.append(message);
-                builder.append('\n');
-            }
+        if (dataFields.size() > MAX_FIELDS) {
+            warningBuilder.append(TOO_MANY_FIELDS_WARNING);
+            warningBuilder.append('\n');
         }
 
         // Delete final newline.
-        if (!builder.isEmpty()){
-            builder.deleteCharAt(builder.length() - 1);
+        if (!warningBuilder.isEmpty()){
+            warningBuilder.deleteCharAt(warningBuilder.length() - 1);
         }
 
-        return builder.toString();
+        return warningBuilder.toString();
     }
 
-    private String warningMessage(String name, boolean hasFixed, boolean hasSpecial, boolean hasDefault) {
-        if (hasFixed) {
-            return warningMessageFixed(name, hasSpecial, hasDefault);
-        } else if (hasDefault && hasSpecial){
-            return "Metadata field " + name + " has both a special and default value.\n" +
-                   "In this case, the default value will be ignored.";
+    private String valueTagWarningMessage(String name, boolean hasFixed, boolean hasSpecial, boolean hasDefault) {
+        String identifier;
+        if (name == null || name.isEmpty()){
+            identifier = "A metadata field";
         } else {
-            return null;
+            identifier = "Metadata field " + name;
+        }
+
+        if (hasFixed) {
+            return valueTagWarningMessageFixed(identifier, hasSpecial, hasDefault);
+        } else if (hasDefault && hasSpecial){
+            return identifier + " has both a special and default value.\n" +
+                   "In this case, the default value will be ignored.\n";
+        } else {
+            return "";
         }
     }
 
-    private String warningMessageFixed(String name, boolean hasSpecial, boolean hasDefault){
+    private String valueTagWarningMessageFixed(String identifier, boolean hasSpecial, boolean hasDefault){
         if (hasDefault){
             if (hasSpecial){
-                return "Metadata field " + name + " has both a fixed, special, and default value.\n" +
-                        "In this case, the default and special values will be ignored.";
+                return identifier + " has both a fixed, special, and default value.\n" +
+                        "In this case, the default and special values will be ignored.\n";
             } else {
-                return "Metadata field " + name + " has both a fixed and default value.\n" +
-                        "In this case, the default value will be ignored.";
+                return identifier + " has both a fixed and default value.\n" +
+                        "In this case, the default value will be ignored.\n";
             }
         } else if (hasSpecial) {
-            return "Metadata field " + name + " has both a fixed and special value.\n" +
-                    "In this case, the special value will be ignored.";
+            return identifier + " has both a fixed and special value.\n" +
+                    "In this case, the special value will be ignored.\n";
         } else {
-            return null;
+            return "";
         }
     }
 
@@ -164,7 +240,8 @@ public class ConfigurationData {
         NodeList tags = element.getElementsByTagName(tag);
         if (tags.getLength() > 0) {
             if (tags.getLength() > 1){
-                System.out.println("A metadata field has two " + tag + " tags. All but the first will be ignored.");
+                System.out.println("A metadata field has " + tags.getLength() + " " + tag +
+                                    " tags.\n All but the first will be ignored.\n");
             }
             return tags.item(0).getTextContent();
         } else {
@@ -172,8 +249,8 @@ public class ConfigurationData {
         }
     }
 
-    public Collection<DataField> getMetadataFields(){
-        return metadataFields.values();
+    public Collection<DataField> dataFields(){
+        return dataFields;
     }
 
     // Parses a special value from a string. Returns null if the string is null or invalid.
@@ -185,12 +262,13 @@ public class ConfigurationData {
         String str = string.toLowerCase();
         SpecialValue output;
         switch (str) {
-            case "time" : output = SpecialValue.Time; break;
-            case "date" : output = SpecialValue.Date; break;
-            case "timezone", "time zone" : output = SpecialValue.Timezone; break;
-            default :
-                badSpecialWarningBuilder.append("Metadata field " + name + " has an invalid special value. It will be ignored.\n");
+            case "time" -> output = SpecialValue.Time;
+            case "date" -> output = SpecialValue.Date;
+            case "timezone", "time zone" -> output = SpecialValue.Timezone;
+            default -> {
+                warningBuilder.append("Metadata field ").append(name).append(" has an invalid special value. It will be ignored.\n");
                 output = null;
+            }
         }
         return output;
     }
