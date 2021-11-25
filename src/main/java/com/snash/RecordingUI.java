@@ -81,14 +81,15 @@ public class RecordingUI extends Group {
         });
 
         grid.add(startButton, 0, 1);
-        grid.add(pauseButton, 1, 1);
-        grid.add(restartButton, 3, 1);
+        // grid.add(pauseButton, 1, 1);
+        // grid.add(restartButton, 3, 1);
         grid.add(stopButton, 4, 1);
-        grid.add(doneButton, 5, 1);
+        // grid.add(doneButton, 5, 1);
 
-
+        /*
         grid.getChildren().addAll(
                 createVolumeSlider(metadata));
+         */
 
         this.getChildren().add(grid);
 
