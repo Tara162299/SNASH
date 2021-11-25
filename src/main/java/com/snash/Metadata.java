@@ -19,7 +19,7 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
         private final SpecialValue specialType;
 
         public MetadataField(DataField dataField) {
-            name = InfoTagList.stringToInfoTag(dataField.name());
+            name = dataField.name();
 
             if (dataField.alias() != null){
                 alias = dataField.alias();
