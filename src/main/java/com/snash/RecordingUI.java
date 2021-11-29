@@ -15,8 +15,7 @@ public class RecordingUI extends Group {
     private AudioRecording audioRecording;
     private final Metadata metadata;
 
-    private Text recordingText;
-    private Text stopText;
+    private Text statusText;
 
     private Button doneButton;
     private Button restartButton;
@@ -80,32 +79,32 @@ public class RecordingUI extends Group {
             recordingUI.startRecording();
         });
 
+        this.statusText = new Text("Ready to record");
+
+        grid.add(this.statusText, 0, 0);
         grid.add(startButton, 0, 1);
-        grid.add(pauseButton, 1, 1);
-        grid.add(restartButton, 3, 1);
+        // grid.add(pauseButton, 1, 1);
+        // grid.add(restartButton, 3, 1);
         grid.add(stopButton, 4, 1);
-        grid.add(doneButton, 5, 1);
+        // grid.add(doneButton, 5, 1);
 
-
+        /*
         grid.getChildren().addAll(
                 createVolumeSlider(metadata));
+         */
 
         this.getChildren().add(grid);
-
-
-        this.recordingText = new Text(0, 20, "Recording...");
-//        this.getChildren().add(recordingText);
     }
 
     public AudioRecording startRecording() {
         this.audioRecording = new AudioRecording(this, metadata);
         audioRecording.start();
+        this.statusText.setText("Recording");
         return audioRecording;
     }
 
     public void stopRecording() {
         audioRecording.requestStop();
-        this.stopText = new Text(10, 20, "Record stopped");
-        this.getChildren().add(stopText);
+        this.statusText.setText("Recording stopped");
     }
 }

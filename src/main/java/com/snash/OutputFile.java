@@ -23,6 +23,7 @@ public class OutputFile {
     private final Metadata metadata;
     private final AudioFormat audioFormat;
     private final int fileNumber;
+    private final String recordingDirectoryPath;
 
     private final String date;
     private final String time;
@@ -41,10 +42,10 @@ public class OutputFile {
     // Create a new OutputFile with the given metadata, and the file number 0.
     // Special fields are calculated at time of OutputFile creation!
     public static OutputFile from(Metadata metadata, AudioFormat audioFormat) throws IOException {
-        return new OutputFile(metadata, audioFormat, 0);
+        return new OutputFile(metadata, audioFormat, null, 0);
     }
 
-    private OutputFile(Metadata metadata, AudioFormat audioFormat, int fileNumber) throws IOException {
+    private OutputFile(Metadata metadata, AudioFormat audioFormat, String recordingDirectoryPath, int fileNumber) throws IOException {
         this.metadata = metadata;
         this.audioFormat = audioFormat;
         this.fileNumber = fileNumber;
@@ -123,7 +124,18 @@ public class OutputFile {
         dataSizeOffset = 40 + off;
 
         // write file to disk
-        file = new File(metadata.getFilePath() + "\\" + fileName());
+        // make recording directory, if needed
+        if (recordingDirectoryPath == null) {
+            this.recordingDirectoryPath = metadata.getFilePath() + "\\" + directoryName();
+            new File(this.recordingDirectoryPath).mkdir();
+        }
+        else {
+            this.recordingDirectoryPath = recordingDirectoryPath;
+        }
+
+
+
+        file = new File(this.recordingDirectoryPath + "\\" + fileName());
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         fileOutputStream.write(fileBytes);
         fileOutputStream.close();
@@ -131,7 +143,7 @@ public class OutputFile {
 
     // Create a new OutputFile with the current metadata, and the next file number.
     public OutputFile nextFile() throws IOException {
-        return new OutputFile(metadata, audioFormat, fileNumber + 1);
+        return new OutputFile(metadata, audioFormat, this.recordingDirectoryPath, fileNumber + 1);
     }
 
     public String fileName(){
@@ -153,6 +165,13 @@ public class OutputFile {
         output.append(fileNumber);
         output.append(".wav");
         return output.toString();
+    }
+
+    private String directoryName() {
+        return "SNASH_"
+                + specialTypeToString(ConfigurationData.SpecialValue.Date)
+                + "_"
+                + specialTypeToString(ConfigurationData.SpecialValue.Time);
     }
 
     private String specialTypeToString(ConfigurationData.SpecialValue specialType){
