@@ -51,9 +51,8 @@ public class OutputFile {
         this.fileNumber = fileNumber;
 
         //stackabuse.com/how-to-get-current-date-and-time-in-java/
-        date = new SimpleDateFormat("dd-MM-yy").format(new Date());
-        time = new SimpleDateFormat("HH-mm").format(new Date());
-        //TODO: Finding this from the internet vs the operating system would be nice.
+        date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        time = new SimpleDateFormat("HH-mm-ss").format(new Date());
         timeZone = TimeZone.getDefault().getDisplayName();
 
         ListChunk chunk = new ListChunk();
@@ -148,7 +147,6 @@ public class OutputFile {
 
     public String fileName(){
         StringBuilder output = new StringBuilder();
-        output.append("SNASH_");
 
         List<MetadataField> filenameFields = metadata.getDataFields();
 
@@ -162,6 +160,9 @@ public class OutputFile {
             }
         }
 
+        if(output.isEmpty()){
+            output.append("SNASH_");
+        }
         output.append(fileNumber);
         output.append(".wav");
         return output.toString();
