@@ -9,6 +9,10 @@ import com.snash.ConfigurationData.SpecialValue;
 
 public class Metadata implements Iterable<Metadata.MetadataField> {
 
+    private static final String CHARACTER_INVALID_WARNING = " has the invalid character ";
+    private static final String FIELD_EMPTY_WARNING = " has been left blank.";
+    private static final String FIELD_TOO_LONG_WARNING = " has more than 50 characters.";
+
     public static class MetadataField {
         private final String name;
         private final String alias;
@@ -111,6 +115,56 @@ public class Metadata implements Iterable<Metadata.MetadataField> {
     public String getFilePath(){
         return filePath;
     }
+
+    public String getWarning(){
+        StringBuilder warningBuilder = new StringBuilder();
+        for (MetadataField field : dataFields){
+            String value = field.getValue();
+            if (value == null || value.isEmpty()){
+                if (field.getValueType() != ValueType.SPECIAL) {
+                    warningBuilder.append(identifier(field)).append(FIELD_EMPTY_WARNING).append('\n');
+                }
+            } else if (value.length() > 50){
+                warningBuilder.append(identifier(field)).append(FIELD_TOO_LONG_WARNING).append('\n');
+            }
+            List<String> illegalCharacterWarnings = illegalCharacterWarnings(field);
+            for (String warning : illegalCharacterWarnings){
+                warningBuilder.append(warning).append('\n');
+            }
+        }
+        return warningBuilder.toString();
+    }
+
+    private List<String> illegalCharacterWarnings(MetadataField field){
+        String name = field.getName();
+        String alias = field.getAlias();
+        String value = field.getValue();
+        if (value == null || value.isEmpty()) { return new ArrayList<>(); }
+
+        List<String> warnings = new ArrayList<>();
+        for (char possiblyIllegalCharacter : value.toCharArray()){
+            if (possiblyIllegalCharacter < 32 || possiblyIllegalCharacter > 126){
+                warnings.add(identifier(field) + CHARACTER_INVALID_WARNING + possiblyIllegalCharacter);
+            }
+        }
+        return warnings;
+    }
+
+    private String identifier(MetadataField field){
+        String name = field.getName();
+        String alias = field.getAlias();
+
+        if (alias == null || alias.isEmpty()){
+            if (name == null || name.isEmpty()){
+                return "A field";
+            } else {
+                return "Field " + name;
+            }
+        } else {
+            return "Field " + alias;
+        }
+    }
+
 
     @Override
     public Iterator<MetadataField> iterator() {

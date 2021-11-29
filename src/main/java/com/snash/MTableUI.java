@@ -19,9 +19,13 @@ public class MTableUI extends Group {
 
     private final ArrayList<TablePage> pages = new ArrayList<>();
     private Metadata metadata = null;
-    private String path = null;
+    private File file = null;
     private int fieldsDisplayed = 0;
     private int lastPage;
+    private String userWarning = null;
+
+    private static final String FILEPATH_EMPTY_WARNING = "No save location was selected.";
+    private static final String FILEPATH_PROTECTED_WARNING = "The save location cannot be written to.";
 
     public MTableUI() {
         // super(root);
@@ -96,26 +100,49 @@ public class MTableUI extends Group {
         // If the page number is too high, add more pages.
         for (int i = pages.size(); i <= pageNumber; i++){
             boolean isLastPage = (pageNumber == lastPage);
-            TablePage newPage = new TablePage(i, nextFields(metadata), isLastPage);
+            TablePage newPage = new TablePage(i, nextFields(metadata), isLastPage, userWarning);
             pages.add(newPage);
         }
         showPage(pageNumber);
     }
 
     void submit() {
-        if(path == null) { return; }
-        if(path.isEmpty()) { return; }
         if(metadata == null) { return; }
-
         updateMetadataValues();
-        metadata.setFilePath(path);
 
-        RecordingUI recordingUI = new RecordingUI(metadata);
-        this.getScene().setRoot(recordingUI);
+        StringBuilder warningBuilder = new StringBuilder(metadata.getWarning());
+        if(file == null) {
+            warningBuilder.append(FILEPATH_EMPTY_WARNING).append('\n');
+        } else {
+            if (!file.canWrite()) {
+                warningBuilder.append(FILEPATH_PROTECTED_WARNING).append('\n');
+            } else {
+                metadata.setFilePath(file.getPath());
+            }
+        }
+
+        // Delete final newline.
+        if (!warningBuilder.isEmpty()){
+            warningBuilder.deleteCharAt(warningBuilder.length() - 1);
+        }
+
+        if(warningBuilder.isEmpty()) {
+            RecordingUI recordingUI = new RecordingUI(metadata);
+            this.getScene().setRoot(recordingUI);
+        } else {
+            userWarning = warningBuilder.toString();
+            for (TablePage page : pages){
+                page.setWarning(userWarning);
+            }
+        }
     }
 
-    void setPath(String path){
-        this.path = path;
+    private void showWarning(){
+
+    }
+
+    void setFile(File file){
+        this.file = file;
     }
 
     // Returns a list of the next undisplayed metadata fields, up to the max per page.
@@ -138,8 +165,8 @@ public class MTableUI extends Group {
         return newMetadata;
     }
 
-    private void updateMetadataValues(){
-        for (TablePage page : pages){
+    private void updateMetadataValues() {
+        for (TablePage page : pages) {
             page.updateMetadataValues();
         }
     }
