@@ -84,9 +84,11 @@ public class AudioRecording extends Thread {
             while (!this.stopRequest) {
                 line.read(buffer, 0, buffer.length);
                 if (!outputFile.appendAudioData(buffer)) {
+                    outputFile.close();
                     outputFile = outputFile.nextFile();
                 }
             }
+            outputFile.close();
         } catch (LineUnavailableException | IOException ex) {
             ex.printStackTrace();
         }

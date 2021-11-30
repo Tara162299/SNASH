@@ -30,6 +30,7 @@ public class OutputFile {
     private final String timeZone;
 
     private final File file;
+    private RandomAccessFile randomAccessFile;
 
     private long fileSizeOffset;
     private long dataSizeOffset;
@@ -135,9 +136,8 @@ public class OutputFile {
 
 
         file = new File(this.recordingDirectoryPath + "\\" + fileName());
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        fileOutputStream.write(fileBytes);
-        fileOutputStream.close();
+        this.open();
+        randomAccessFile.write(fileBytes);
     }
 
     // Create a new OutputFile with the current metadata, and the next file number.
@@ -183,14 +183,29 @@ public class OutputFile {
         };
     }
 
+    public boolean open() throws IOException {
+        if (randomAccessFile != null) {
+            return false;
+        }
+        randomAccessFile = new RandomAccessFile(file, "rw");
+        return true;
+    }
+
+    public boolean close() throws IOException {
+        if (randomAccessFile == null) {
+            return false;
+        }
+        randomAccessFile.close();
+        randomAccessFile = null;
+        return true;
+    }
+
     public boolean appendAudioData(byte[] data) throws IOException {
         if (!canAppendAudioData(data)) {
             return false;
         }
         fileSize += data.length;
         dataSize += data.length;
-
-        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
 
         randomAccessFile.seek(fileSizeOffset);
         randomAccessFile.write(longToByteArray(fileSize), 0, 4);
@@ -201,13 +216,11 @@ public class OutputFile {
         randomAccessFile.seek(randomAccessFile.length());
         randomAccessFile.write(data);
 
-        randomAccessFile.close();
-
         return true;
     }
 
     public boolean canAppendAudioData(byte[] data) {
-        return fileSize + data.length <= MAX_FILE_SIZE;
+        return fileSize + data.length <= MAX_FILE_SIZE && randomAccessFile != null;
     }
 
     static byte[] stringToByteArray(String text){
