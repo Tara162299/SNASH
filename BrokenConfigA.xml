@@ -1,0 +1,24 @@
+<config>
+    <metadata>
+        <name>TIME</name>
+        <specialValue>Time</specialValue>
+    </metadata>
+
+    <metadata>
+        <name>TZNE</name>
+        <alias>Time Zone</alias>
+        <defaultValue>EST</defaultValue>
+    </metadata>
+
+    <metadata>
+        <name>NAME</name>
+        <alias>Name</alias>
+		<defaultValue>John</defaultValue>
+    </metadata>
+
+    <metadata>
+        <name>IART</name>
+        <alias>Callsign</alias>
+		<defaultValue>Auburn</defaultValue>
+    </metadata>
+</config>
