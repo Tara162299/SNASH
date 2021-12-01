@@ -265,14 +265,24 @@ public class OutputFile {
 
             List<Byte> tagBytes = new ArrayList<>(stringToByteList(name));
 
+            // pads the value with null characters, odd-length values do not work well, Audacity also pads even-length
+            // values although I don't know why
+            String paddedValue;
+            if (value.length() % 2 == 0) {
+                paddedValue = value + "\0\0";
+            }
+            else {
+                paddedValue = value + "\0";
+            }
+
             // Add value's size as four bytes, little endian.
             // Value should never of length more than 50, but it can be up to 255 before this breaks.
-            tagBytes.add((byte) value.length());
+            tagBytes.add((byte) paddedValue.length());
             for (int i = 0; i < 3; i++){
                 tagBytes.add((byte) 0);
             }
 
-            tagBytes.addAll(stringToByteList(value));
+            tagBytes.addAll(stringToByteList(paddedValue));
             subChunks.addAll(tagBytes);
         }
 
